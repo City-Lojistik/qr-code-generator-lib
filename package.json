@@ -1,0 +1,18 @@
+{
+  "name": "qrcode-generator-lib",
+  "version": "0.1.0",
+  "description": "a tiny qr code generation library",
+  "main": "index.ts",
+  "author": "Alexander Ruppert",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "vitest": "^0.15.1",
+    "vite": "^2.9.12"
+  },
+  "scripts": {
+    "build": "vite build",
+    "test": "vitest"
+  }
+}
