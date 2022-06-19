@@ -1,7 +1,7 @@
 import { QrParameters } from '../parameters'
 import { createMatrix, range } from '../utilities'
 
-function applyFinderPatterns(matrix: boolean[][]) {
+function applyFinderPatterns(matrix: (boolean|null)[][]) {
   const dimensions = matrix.length
   const drawSquares = (x: number, y: number) => {
     for (let j = 0; j < 3; j++)
@@ -26,16 +26,16 @@ function applyFinderPatterns(matrix: boolean[][]) {
   drawGapNextToSquares()
 }
 
-function applyTimingPatterns(matrix: boolean[][]) {
+function applyTimingPatterns(matrix: (boolean|null)[][]) {
   for (let i = 7; i < matrix.length - 7; i++)
     matrix[6][i] = matrix[i][6] = i % 2 === 0
 }
 
-function applyDarkModule(matrix: boolean[][]) {
+function applyDarkModule(matrix: (boolean|null)[][]) {
   matrix[matrix.length - 8][8] = true
 }
 
-function applyReservedAreas(version: number, matrix: boolean[][]) {
+function applyReservedAreas(version: number, matrix: (boolean|null)[][]) {
   const dimensions = matrix.length
   ;[...range(0, 9), ...range(dimensions - 8, dimensions)].forEach(
     (i) => (matrix[i][8] = matrix[8][i] = false),
@@ -48,7 +48,7 @@ function applyReservedAreas(version: number, matrix: boolean[][]) {
         matrix[dimensions - 11 + i][j] = matrix[j][dimensions - 11 + i] = false
 }
 
-function applyAlignmentPatterns(locations: number[], matrix: boolean[][]) {
+function applyAlignmentPatterns(locations: number[], matrix: (boolean|null)[][]) {
   const drawPattern = (x: number, y: number) => {
     for (let j = 0; j < 3; j++)
       for (let i = 0 + j; i < 5 - j; i++)

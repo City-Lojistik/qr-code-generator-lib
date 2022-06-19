@@ -1,22 +1,22 @@
-function generateExponentsLookUpTable() {
-  const table = [1]
-  while (table.length < 256) {
-    const last = table[table.length - 1]
-    let next = last << 1
-    if (next > 255) next ^= 285
+import { range } from '../utilities'
 
-    table.push(next)
-  }
-  return Object.assign({}, table)
+function generateExponentsLookUpTable() {
+  const table: number[] = []
+  range(0, 255).reduce(
+    (acc) => (table.push(acc), acc & 128 ? (acc * 2) ^ 285 : acc * 2),
+    1,
+  )
+
+  return table
 }
-function flip(obj: Object) {
-  const result = {}
-  Object.keys(obj).forEach((key) => (result[obj[key]] = +key))
+function flip(obj: number[]) {
+  const result = {} as any
+  obj.forEach((value, i) => (result[value] = +i))
   return result
 }
 
 export const exponents = generateExponentsLookUpTable()
-export const logs = { ...flip(exponents), 1: 0 }
+export const logs = { ...flip(exponents), 1: 0 } as { [key: number]: number }
 
 function mul(x: number, y: number) {
   if (x === 0 || y === 0) return 0
@@ -46,9 +46,10 @@ export function divPoly(dividend: Uint8Array, divisor: Uint8Array) {
 }
 
 export function generatorPoly(n: number) {
-  const pow = (x: number, power: number) => exponents[(logs[x] * power) % 255]
-  let g = Uint8Array.from([1])
-  for (let i = 0; i < n; i++) g = mulPoly(g, [1, pow(2, i)])
+  // const pow = (x: number, power: number) => exponents[(logs[x] * power) % 255]
+  let g = Uint8Array.from([1]),
+    i = 0
+  for (; i < n; i++) g = mulPoly(g, [1, exponents[i/* % 255*/]])
 
   return g
 }

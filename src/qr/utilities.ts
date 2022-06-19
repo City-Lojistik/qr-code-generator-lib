@@ -1,51 +1,36 @@
 export function chunkString(content: string, length: number): string[] {
-  return Array.from({ length: Math.ceil(content.length / length) }, (_, i) =>
+  return range(0, Math.ceil(content.length / length)).map((i) =>
     content.substr(i++ * length, length),
   )
 }
 
-export function get0s(count: number) {
-  return ''.padStart(count, '0')
+export function pad0(content: string, count: number) {
+  return content.padStart(count, '0')
 }
 
-export function pad0(content: string, length: number) {
-  return content.padStart(length, '0')
-}
-
-export function numToBits(content: number, length: number) {
-  return pad0(content.toString(2), length)
-}
-
-export function concatTypedArrays(a: Uint8Array, b: Uint8Array): Uint8Array {
-  const c = new Uint8Array(a.length + b.length)
-  c.set(a, 0)
-  c.set(b, a.length)
-  return c
+export function numToBits(content: number, count: number) {
+  return pad0(content.toString(2), count)
 }
 
 export function range(from: number, to: number): number[] {
-  return Array(to - from)
-    .fill(from)
-    .map((x, index) => x + index)
+  return Array.from({ length: to - from }, (_, i) => i + from)
 }
-export function createMatrix(dimensions: number): boolean[][] {
-  return [...new Array(dimensions)].map(() =>
-    [...new Array(dimensions)].fill(null),
-  )
+export function createMatrix(dimensions: number): (boolean | null)[][] {
+  const base = Array.from({ length: dimensions }, (_) => null)
+  return base.map((_) => base.slice())
 }
-export function cloneMatrix(matrix: boolean[][]) {
+export function cloneMatrix(matrix: (boolean | null)[][]) {
   return matrix.slice().map((m) => m.slice())
 }
 export function mergeMatrices(
-  matrix1: boolean[][],
-  matrix2: boolean[][],
-): boolean[][] {
+  matrix1: (boolean | null)[][],
+  matrix2: (boolean | null)[][],
+): (boolean | null)[][] {
   let result = cloneMatrix(matrix1)
-  iterateOverMatrix(matrix1, (val, x, y) => {
-    if (val === null) {
-      result[y][x] = matrix2[y][x]
-    }
-  })
+  iterateOverMatrix(
+    matrix1,
+    (val, x, y) => val === null && (result[y][x] = matrix2[y][x]),
+  )
   return result
 }
 
@@ -54,27 +39,35 @@ export enum MatrixIterationDirection {
   Vertical,
 }
 export function iterateOverMatrix(
-  matrix: boolean[][],
-  fn: (value: boolean, x: number, y: number, matrix: boolean[][]) => void,
-  fnSecondary: (index: number, matrix: boolean[][]) => void = () => {},
+  matrix: (boolean | null)[][],
+  fn: (
+    value: boolean | null,
+    x: number,
+    y: number,
+    matrix: (boolean | null)[][],
+  ) => void,
+  fnSecondary: (index: number, matrix: (boolean | null)[][]) => void = () => {},
   direction = MatrixIterationDirection.Horizontal,
 ) {
-  for (let y = 0; y < matrix.length; y++) {
-    for (let x = 0; x < matrix.length; x++) {
-      if (direction === MatrixIterationDirection.Horizontal)
-        fn(matrix[y][x], x, y, matrix)
-      else fn(matrix[x][y], y, x, matrix)
-    }
-    fnSecondary(y, matrix)
-  }
+  matrix.forEach(
+    (row, y) => (
+      row.forEach((val, x) =>
+        direction === MatrixIterationDirection.Horizontal
+          ? fn(val, x, y, matrix)
+          : fn(matrix[x][y], y, x, matrix),
+      ),
+      fnSecondary(y, matrix)
+    ),
+  )
 }
 
 export function encodeUtf8(s: string) {
   let i = 0,
     ci = 0,
-    bytes = new Uint8Array(s.length * 4)
+    bytes = new Uint8Array(s.length * 4),
+    c
   for (; ci != s.length; ci++) {
-    let c = s.charCodeAt(ci)
+    c = s.charCodeAt(ci)
     if (c < 128) {
       bytes[i++] = c
       continue

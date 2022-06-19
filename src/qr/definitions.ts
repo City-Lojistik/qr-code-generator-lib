@@ -1,4 +1,3 @@
-import { QrModes } from './parameters'
 import { chunkString } from './utilities'
 
 export enum EcLevels {
@@ -12,9 +11,7 @@ export enum EcLevels {
 const qrDefinitionTable = chunkString(
   '0011030906060a020325091a14141a0908441834100a1406126710231816090218921633100814041056091916111a0812651022100718061682142914101807219a1427120916051056183316111a081268213a1a1416051678142718121a0718911428161214042199163012091605147316312116160516831a35161121081a911a361a141a0721a318331a141a071a971834181318061a91183121161a081a9a18321a1421091a951a362116160621a41a372116210821a01a352116210918901a37211621081a981a361a14210921a51a352115210821a01a3521162108219a1a352115210821991a372116210821991a362116210821991a362116210821991a362116210821991a362116210921a41a372116210821a41a372116210821a51a362116210821a51a362116210821a01a372116210821a11a3721162108',
   2,
-).map(
-  (s) => parseInt(s, 11) + 7,
-) /*[
+).map((s) => parseInt(s, 11) + 7) /*[
   7,
   19,
   10,
@@ -416,7 +413,7 @@ export function getGroups(version: number, ecLevel: EcLevels) {
   return result
 }
 
-export function getChracterCountBits(version: number, mode: QrModes) {
+export function getChracterCountBits(version: number) {
   let block =
     version >= 1 && version <= 9
       ? 0
@@ -429,22 +426,12 @@ export function getChracterCountBits(version: number, mode: QrModes) {
   if (block < 0) {
     throw new Error(`Invalid version: ${version}`)
   }
-
-  switch (mode) {
-    case QrModes.Numeric:
-      return 10 + block * 2
-    case QrModes.Alphanumeric:
-      return 9 + block * 2
-    case QrModes.Byte:
-      return Math.min(8 + block * 8, 16)
-    case QrModes.Kanji:
-      return 8 + block * 2
-    default:
-      throw new Error(`Invalid mode: ${mode}`)
-  }
+  return Math.min(8 + block * 8, 16)
 }
 
-export function getRequiredNumberOfBits(groups) {
+export function getRequiredNumberOfBits(
+  groups: { wordsPerBlock: number; blocks: number }[],
+) {
   return (
     groups.reduce((acc, val) => acc + val.wordsPerBlock * val.blocks, 0) * 8
   )

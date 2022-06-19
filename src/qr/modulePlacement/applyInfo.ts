@@ -1,16 +1,16 @@
 import { divPoly } from '../errorCorrection/galoisField'
 import { QrParameters } from '../parameters'
-import { get0s, numToBits, pad0, range } from '../utilities'
+import { chunkString, numToBits, pad0, range } from '../utilities'
 
 export function applyFormatInformation(
   config: QrParameters,
   mask: number,
-  matrix: boolean[][],
+  matrix: (boolean | null)[][],
 ) {
-  let bits = ['01', '00', '11', '10'][config.ecLevel]
+  let bits = chunkString('01001110', 2)[config.ecLevel]
   bits += numToBits(mask, 3)
 
-  const bits10 = (bits + get0s(10)).split('').map((el) => +el)
+  const bits10 = (bits + pad0('', 10)).split('').map((el) => +el)
 
   const generator = Uint8Array.from([1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1])
   const message = Uint8Array.from(bits10)
@@ -43,12 +43,12 @@ export function applyFormatInformation(
 
 export function applyVerisonInformation(
   config: QrParameters,
-  matrix: boolean[][],
+  matrix: (boolean | null)[][],
 ) {
   if (config.version < 7) return matrix
   const generator = Uint8Array.from([1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1])
   const bits = numToBits(config.version, 6)
-  const bits10 = (bits + get0s(12)).split('').map((el) => +el)
+  const bits10 = (bits + pad0('', 12)).split('').map((el) => +el)
   const message = Uint8Array.from(bits10)
   const remainder = divPoly(message, generator).join('')
   const versionInfo = bits + pad0(remainder, 12)

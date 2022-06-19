@@ -6,7 +6,7 @@ import {
   range,
 } from '../utilities'
 
-function getLineGroupScore(matrix: boolean[][]) {
+function getLineGroupScore(matrix: (boolean | null)[][]) {
   let score = 0
   let currentColor = false
   let currentRun = 0
@@ -22,7 +22,7 @@ function getLineGroupScore(matrix: boolean[][]) {
       (value) => {
         if (value !== currentColor) {
           scoreLineGroupCondition()
-          currentColor = value
+          currentColor = value as boolean
         }
         currentRun++
       },
@@ -33,7 +33,7 @@ function getLineGroupScore(matrix: boolean[][]) {
   return score
 }
 
-function getSquareScore(matrix: boolean[][]) {
+function getSquareScore(matrix: (boolean | null)[][]) {
   let score = 0
 
   iterateOverMatrix(matrix, (_, x, y) => {
@@ -41,7 +41,11 @@ function getSquareScore(matrix: boolean[][]) {
       const squareBitMask = range(0, 4).reduce(
         //get current, right, bottom and bottom-right module and merge them to a bitmask
         (acc, dirBitMask, i) =>
-          acc | (+matrix[y + (dirBitMask >> 1)][x + (dirBitMask & 0b01)] << i),
+          acc |
+          (+(matrix[y + (dirBitMask >> 1)][
+            x + (dirBitMask & 0b01)
+          ] as boolean) <<
+            i),
         0,
       )
       const isSquare = squareBitMask === 0 || squareBitMask === 15
@@ -51,7 +55,7 @@ function getSquareScore(matrix: boolean[][]) {
   return score
 }
 
-function getFinderConfusionScore(matrix: boolean[][]) {
+function getFinderConfusionScore(matrix: (boolean | null)[][]) {
   const [d, w] = [true, false]
   const template = [d, w, d, d, d, w, d, w, w, w, w]
   const patterns = [
@@ -60,7 +64,7 @@ function getFinderConfusionScore(matrix: boolean[][]) {
   ]
 
   let score = 0
-  const evaluateFinderConfusionCondition = (value: boolean) => {
+  const evaluateFinderConfusionCondition = (value: boolean | null) => {
     patterns.forEach((pattern) => {
       pattern.current +=
         value === pattern.template[pattern.current] ? 1 : -pattern.current
@@ -82,7 +86,7 @@ function getFinderConfusionScore(matrix: boolean[][]) {
   return score
 }
 
-function getColorImbalanceScore(matrix: boolean[][]) {
+function getColorImbalanceScore(matrix: (boolean | null)[][]) {
   const totalCount = matrix.length * matrix.length
   let darkCount = 0
   iterateOverMatrix(matrix, (value) => (darkCount += value ? 1 : 0))
@@ -96,7 +100,7 @@ function getColorImbalanceScore(matrix: boolean[][]) {
   return score
 }
 
-function evaluateMasking(matrix: boolean[][]) {
+function evaluateMasking(matrix: (boolean | null)[][]) {
   return [
     getLineGroupScore,
     getSquareScore,
@@ -108,11 +112,11 @@ function evaluateMasking(matrix: boolean[][]) {
 }
 
 export function applyMasking(
-  functionalMatrix: boolean[][],
-  dataMatrix: boolean[][],
+  functionalMatrix: (boolean | null)[][],
+  dataMatrix: (boolean | null)[][],
 ) {
   const maskMatrix = (
-    matrix: boolean[][],
+    matrix: (boolean | null)[][],
     condition: { (x: any, y: any): boolean; (arg0: number, arg1: number): any },
   ) => {
     const copy = cloneMatrix(matrix)
@@ -143,6 +147,10 @@ export function applyMasking(
         const score = evaluateMasking(matrix)
         return score < acc.score ? { score, mask, matrix } : acc
       },
-      { score: Number.POSITIVE_INFINITY, mask: 0, matrix: [] as boolean[][] },
+      {
+        score: Number.POSITIVE_INFINITY,
+        mask: 0,
+        matrix: [] as (boolean | null)[][],
+      },
     )
 }

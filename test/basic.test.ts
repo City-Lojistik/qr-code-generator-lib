@@ -6,7 +6,9 @@ import expectedUrl from './results/url'
 import expectedNumeric from './results/numeric'
 import expectedAlphanumeric from './results/alphanumeric'
 import expectedByte from './results/byte'
+import expectedByteLong from './results/byteLong'
 import expectedRender from './results/render'
+import fs from 'fs'
 // Edit an assertion and save to see HMR in action
 
 test('url', () => {
@@ -20,6 +22,12 @@ test('byte', () => {
   expect(result).toStrictEqual(expectedByte)
 })
 
+test('byte long', () => {
+  const text = ''.padStart(2000, 'a')
+  const result = getMatrix(text)
+  expect(result).toStrictEqual(expectedByteLong)
+})
+/*
 test('numeric', () => {
   const result = getMatrix('1234567890')
   expect(result).toStrictEqual(expectedNumeric)
@@ -29,12 +37,12 @@ test('alphanumeric', () => {
   const result = getMatrix('1234567890ABCDEFGYZ')
   expect(result).toStrictEqual(expectedAlphanumeric)
 })
-
+*/
 test('render', () => {
   const result = render(
     getMatrix(
       'https://github.com/AlexRuppert/bookmarklet-generator/blob/aaea8a10c11cc3df07517d9112d972999e9e49a1/README.md',
-    ),
+    ) as boolean[][],
   )
   expect(result).toStrictEqual(expectedRender)
 })
