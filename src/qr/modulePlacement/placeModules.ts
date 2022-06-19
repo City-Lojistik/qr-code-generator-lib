@@ -11,7 +11,7 @@ enum MoveDirection {
   Down = 1,
 }
 
-function applyData(patternMatrix: boolean[][], data: string) {
+function applyData(patternMatrix: (boolean|null)[][], data: string) {
   let dataMatrix = createMatrix(patternMatrix.length)
   const MAX = patternMatrix.length - 1
   let x = MAX
