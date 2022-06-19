@@ -8,6 +8,7 @@ import expectedAlphanumeric from './results/alphanumeric'
 import expectedByte from './results/byte'
 import expectedByteLong from './results/byteLong'
 import expectedRender from './results/render'
+import expected0 from './results/0'
 import fs from 'fs'
 // Edit an assertion and save to see HMR in action
 
@@ -38,6 +39,10 @@ test('alphanumeric', () => {
   expect(result).toStrictEqual(expectedAlphanumeric)
 })
 */
+test('0', () => {
+  const result = getMatrix(String.fromCharCode(0) + String.fromCharCode(0))
+  expect(result).toStrictEqual(expected0)
+})
 test('render', () => {
   const result = render(
     getMatrix(

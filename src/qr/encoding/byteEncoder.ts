@@ -1,10 +1,5 @@
 import type { QrParameters } from '../parameters'
-import {
-  chunkString,
-  numToBits,
-  pad0,
-  encodeUtf8,
-} from '../utilities'
+import { chunkString, numToBits, pad0, encodeUtf8 } from '../utilities'
 import { getEcWords } from '../errorCorrection/reedSolomon'
 export class ByteEncoder {
   protected config: QrParameters
@@ -52,6 +47,7 @@ export class ByteEncoder {
     )
 
     const blocks = this.createBlocks(byteArray)
+
     const ecBlocks = blocks.map((b) =>
       getEcWords(b, this.config.groups[0].ecPerBlock),
     )
@@ -70,11 +66,11 @@ export class ByteEncoder {
   fillUpBits(bits: string) {
     const diff = this.config.requiredNumberOfBits - bits.length
     if (diff > 0) {
-      bits += pad0('', Math.min(diff, 4)) //fill up to 0000
-      bits += pad0('', 8 - (bits.length % 8)) //fill up to be multiple of 8
+      bits += pad0(Math.min(diff, 4)) //fill up to 0000
+      bits += pad0(8 - (bits.length % 8)) //fill up to be multiple of 8
 
       while (bits.length < this.config.requiredNumberOfBits)
-        bits += '1110110000010001' //fill up until required number of bits
+        bits += (60433).toString(2) // '1110110000010001' //fill up until required number of bits
 
       return bits.substr(0, this.config.requiredNumberOfBits)
     }
@@ -90,6 +86,6 @@ export class ByteEncoder {
     return '0100' + countIndicator
   }
   suffix() {
-    return pad0('', this.config.remainderBits)
+    return pad0(this.config.remainderBits)
   }
 }

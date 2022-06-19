@@ -1,4 +1,4 @@
-export function render(matrix: boolean[][]) {
+export function render(matrix: (boolean | null)[][]) {
   let d = ''
   let ml = matrix.length
   matrix.forEach((row, y) => {

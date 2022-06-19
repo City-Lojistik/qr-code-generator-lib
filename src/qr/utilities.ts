@@ -4,12 +4,12 @@ export function chunkString(content: string, length: number): string[] {
   )
 }
 
-export function pad0(content: string, count: number) {
+export function pad0(count: number, content: string = '') {
   return content.padStart(count, '0')
 }
 
 export function numToBits(content: number, count: number) {
-  return pad0(content.toString(2), count)
+  return pad0(count, content.toString(2))
 }
 
 export function range(from: number, to: number): number[] {

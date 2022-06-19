@@ -7,16 +7,15 @@ export function applyFormatInformation(
   mask: number,
   matrix: (boolean | null)[][],
 ) {
-  let bits = chunkString('01001110', 2)[config.ecLevel]
-  bits += numToBits(mask, 3)
+  let bits = chunkString('01001110', 2)[config.ecLevel] + numToBits(mask, 3)
 
-  const bits10 = (bits + pad0('', 10)).split('').map((el) => +el)
+  const bits10 = [...(bits + pad0(10))].map(Number)
 
-  const generator = Uint8Array.from([1, 0, 1, 0, 0, 1, 1, 0, 1, 1, 1])
+  const generator = Uint8Array.from([...'10100110111'].map(Number))
   const message = Uint8Array.from(bits10)
   const remainder = divPoly(message, generator).join('')
 
-  bits += pad0(remainder, 10)
+  bits += pad0(10, remainder)
   const formatInfo = numToBits(parseInt(bits, 2) ^ 21522, 15)
 
   const horizontal = [
@@ -48,10 +47,10 @@ export function applyVerisonInformation(
   if (config.version < 7) return matrix
   const generator = Uint8Array.from([1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 1, 0, 1])
   const bits = numToBits(config.version, 6)
-  const bits10 = (bits + pad0('', 12)).split('').map((el) => +el)
+  const bits10 = (bits + pad0(12)).split('').map((el) => +el)
   const message = Uint8Array.from(bits10)
   const remainder = divPoly(message, generator).join('')
-  const versionInfo = bits + pad0(remainder, 12)
+  const versionInfo = bits + pad0(12,remainder)
 
   let d = 0
 
