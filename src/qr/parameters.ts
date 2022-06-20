@@ -7,7 +7,7 @@ import {
   getRemainderBits,
   getRequiredNumberOfBits,
 } from './definitions'
-import { encodeUtf8, range } from './utilities'
+import { encodeUtf8, range, range0 } from './utilities'
 export type QrParameters = {
   ecLevel: EcLevels
   version: number
@@ -38,7 +38,7 @@ let createVersionLookup = () => {
     version = 0
 
   range(1, 41).map((version) => {
-    range(0, 4).map((ecLevel) => {
+    range0(4).map((ecLevel) => {
       groups = getGroups(version, ecLevel)
       requiredNumberOfBits = getRequiredNumberOfBits(groups)
       characterCountBits = getChracterCountBits(version)
@@ -74,6 +74,4 @@ let getSmallestVersion = (length: number, ecLevel = EcLevels.L) => {
 export let getParameters = (
   content: string,
   ecLevel = EcLevels.L,
-): QrParameters => {
-  return getSmallestVersion(encodeUtf8(content).length, ecLevel)
-}
+): QrParameters => getSmallestVersion(encodeUtf8(content).length, ecLevel)

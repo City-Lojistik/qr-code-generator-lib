@@ -1,30 +1,27 @@
-export let chunkString = (content: string, length: number): string[] => {
-  return range(0, Math.ceil(content.length / length)).map((i) =>
+export let chunkString = (content: string, length: number): string[] =>
+  range0(Math.ceil(content.length / length)).map((i) =>
     content.substr(i++ * length, length),
   )
-}
 
-export let pad0 = (count: number, content: string = '') => {
-  return content.padStart(count, '0')
-}
+export let pad0 = (count: number, content: string = '') =>
+  content.padStart(count, '0')
 
-export let numToBits = (content: number, count: number) => {
-  return pad0(count, content.toString(2))
-}
-export let bitsToArray = (bits: string) => {
-  return [...bits].map(Number)
-}
+export let numToBits = (content: number, count: number) =>
+  pad0(count, content.toString(2))
 
-export let range = (from: number, to: number): number[] => {
-  return Array.from({ length: to - from }, (_, i) => i + from)
-}
+export let bitsToArray = (bits: string) => [...bits].map(Number)
+
+export let range = (from: number, to: number): number[] =>
+  Array.from({ length: to - from }, (_, i) => i + from)
+export let range0 = (to: number): number[] => range(0, to)
 export let createMatrix = (dimensions: number): (boolean | null)[][] => {
-  let base = range(0, dimensions).map((_) => null)
+  let base = range0(dimensions).map((_) => null)
   return base.map((_) => base.slice())
 }
-export let cloneMatrix = (matrix: (boolean | null)[][]) => {
-  return matrix.slice().map((m) => m.slice())
-}
+export let cloneMatrix = (matrix: (boolean | null)[][]) =>
+  matrix.slice().map((m) => m.slice())
+
+export let len = (array: any[]) => array.length
 export let mergeMatrices = (
   matrix1: (boolean | null)[][],
   matrix2: (boolean | null)[][],
@@ -64,8 +61,7 @@ export let iterateOverMatrix = (
 }
 
 export let encodeUtf8 = (s: string) => {
-  let i = 0,
-    ci = 0,
+  let ci = 0,
     bytes = [],
     c
   for (; ci < s.length; ci++) {

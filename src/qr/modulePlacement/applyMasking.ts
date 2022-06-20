@@ -1,17 +1,14 @@
-import {
-  cloneMatrix,
-  iterateOverMatrix,
-  mergeMatrices,
-  range,
-} from '../utilities'
+import { bitsToArray, range0 } from './../utilities'
+import { cloneMatrix, iterateOverMatrix, mergeMatrices } from '../utilities'
 
+let score: number = 0
 let getLineGroupScore = (matrix: (boolean | null)[][]) => {
-  let score = 0
   let currentColor = false
+
   let currentRun = 0
 
   let scoreLineGroupCondition = () => {
-    score += currentRun >= 5 ? 3 + Math.max(0, currentRun - 5) : 0
+    score += currentRun >= 5 ? currentRun - 2 : 0
     currentRun = 0
   }
   //horizontal & vertical
@@ -29,15 +26,12 @@ let getLineGroupScore = (matrix: (boolean | null)[][]) => {
       dir,
     )
   })
-  return score
 }
 
 let getSquareScore = (matrix: (boolean | null)[][]) => {
-  let score = 0
-
   iterateOverMatrix(matrix, (_, x, y) => {
     if (x < matrix.length - 1 && y < matrix.length - 1) {
-      let squareBitMask = range(0, 4).reduce(
+      let squareBitMask = range0(4).reduce(
         //get current, right, bottom and bottom-right module and merge them to a bitmask
         (acc, dirBitMask, i) =>
           acc |
@@ -47,32 +41,29 @@ let getSquareScore = (matrix: (boolean | null)[][]) => {
             i),
         0,
       )
-      let isSquare = squareBitMask === 0 || squareBitMask === 15
-      score += isSquare ? 3 : 0
+
+      // let isSquare = squareBitMask === 0 || squareBitMask === 15
+      score += squareBitMask % 15 === 0 ? 3 : 0
     }
   })
-  return score
 }
 
 let getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
- 
-  let template = [true, false, true, true, true, false, true, false, false, false, false]
   let patterns = [
-    { template, current: 0 },
-    { template: template.slice().reverse(), current: 0 },
+    { template: bitsToArray('10111010000'), current: 0 },
+    { template: bitsToArray('00001011101'), current: 0 },
   ]
 
-  let score = 0
-  let evaluateFinderConfusionCondition = (value: boolean | null) => {
+  let evaluateFinderConfusionCondition = (value: boolean | null) =>
     patterns.map((pattern) => {
       pattern.current +=
-        value === pattern.template[pattern.current] ? 1 : -pattern.current
-      if (pattern.current >= pattern.template.length) {
-        score += 40
-        pattern.current = 0
-      }
+        +(value as boolean) === pattern.template[pattern.current]
+          ? 1
+          : -pattern.current
+      if (pattern.current >= pattern.template.length)
+        (score += 40), (pattern.current = 0)
     })
-  }
+
   //horizontal & vertical
   ;[0, 1].map((dir) => {
     iterateOverMatrix(
@@ -82,74 +73,67 @@ let getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
       dir,
     )
   })
-  return score
 }
 
 let getColorImbalanceScore = (matrix: (boolean | null)[][]) => {
   let totalCount = matrix.length * matrix.length
   let darkCount = 0
-  iterateOverMatrix(matrix, (value) => (darkCount += value ? 1 : 0))
+  iterateOverMatrix(matrix, (value) => (darkCount += +(value as boolean)))
 
-  let percentage = +((darkCount / totalCount) * 100).toFixed(0)
+  let percentage = +((darkCount / totalCount) * 100)
   let lower = percentage - (percentage & 5)
-  let higher = lower + 5
-  let score =
-    Math.min(...[lower, higher].map((el) => Math.abs(el - 50) / 5)) * 10
 
-  return score
+  score +=
+    Math.min(...[lower, lower + 5].map((el) => Math.abs(el - 50) / 5)) * 10 + 5
 }
 
-let evaluateMasking = (matrix: (boolean | null)[][]) => {
-  return [
-    getLineGroupScore,
-    getSquareScore,
-    getFinderConfusionScore,
-    getColorImbalanceScore,
-  ]
-    .map((fn) => fn(matrix))
-    .reduce((acc, val) => acc + val, 0)
+let maskingMethods: Array<(x: number, y: number) => number> = [
+  (x, y) => (x + y) % 2,
+  (x, y) => y % 2,
+  (x, y) => x % 3,
+  (x, y) => (x + y) % 3,
+  (x, y) => (0 | (y / 2 + (0 | (x / 3)))) % 2,
+  (x, y) => ((x * y) % 2) + ((x * y) % 3),
+  (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2,
+  (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2,
+]
+
+let evaluateMasking = (matrix: (boolean | null)[][]) => (
+  (score = 0),
+  getLineGroupScore(matrix),
+  getSquareScore(matrix),
+  getFinderConfusionScore(matrix),
+  getColorImbalanceScore(matrix)
+)
+
+let maskMatrix = (
+  matrix: (boolean | null)[][],
+  condition: { (x: any, y: any): number; (arg0: number, arg1: number): any },
+) => {
+  let copy = cloneMatrix(matrix)
+  iterateOverMatrix(copy, (value, x, y) =>
+    !condition(x, y) ? (copy[y][x] = !value) : 0,
+  )
+  return copy
 }
 
 export let applyMasking = (
-  letalMatrix: (boolean | null)[][],
+  patternMatrix: (boolean | null)[][],
   dataMatrix: (boolean | null)[][],
-) => {
-  let maskMatrix = (
-    matrix: (boolean | null)[][],
-    condition: { (x: any, y: any): boolean; (arg0: number, arg1: number): any },
-  ) => {
-    let copy = cloneMatrix(matrix)
-    iterateOverMatrix(copy, (value, x, y) => {
-      if (condition(x, y)) copy[y][x] = !value
-    })
-    return copy
-  }
-
-  let maskingMethods: Array<(x: number, y: number) => boolean> = [
-    (x, y) => (x + y) % 2 === 0,
-    (x, y) => y % 2 === 0,
-    (x, y) => x % 3 === 0,
-    (x, y) => (x + y) % 3 === 0,
-    (x, y) => (0 | (y / 2 + (0 | (x / 3)))) % 2 === 0,
-    (x, y) => ((x * y) % 2) + ((x * y) % 3) === 0,
-    (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2 === 0,
-    (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0,
-  ]
-
-  return maskingMethods
+) =>
+  maskingMethods
     .map((method) =>
-      mergeMatrices(letalMatrix, maskMatrix(dataMatrix, method)),
+      mergeMatrices(patternMatrix, maskMatrix(dataMatrix, method)),
     )
     .reduce(
       //find the matrix with lowest score
-      (acc, matrix, mask) => {
-        let score = evaluateMasking(matrix)
-        return score < acc.score ? { score, mask, matrix } : acc
-      },
+      (acc, matrix, mask) => (
+        evaluateMasking(matrix),
+        score < acc.score ? { score, mask, matrix } : acc
+      ),
       {
-        score: 0xffffff,
+        score: 1 << 30,
         mask: 0,
         matrix: [] as (boolean | null)[][],
       },
     )
-}

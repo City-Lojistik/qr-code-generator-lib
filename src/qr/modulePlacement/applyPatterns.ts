@@ -1,11 +1,11 @@
 import { QrParameters } from '../parameters'
-import { createMatrix, range } from '../utilities'
+import { createMatrix, range, range0 } from '../utilities'
 
 let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
   let dimensions = matrix.length
   let dimensionsSubSeven = dimensions - 7
   let drawSquares = (x: number, y: number) => {
-    range(0, 3).map((j) => {
+    range0(3).map((j) => {
       range(j, 7 - j).map(
         (i) =>
           (matrix[y + j][x + i] =
@@ -19,7 +19,7 @@ let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
   }
 
   let drawGapNextToSquares = () => {
-    range(0, 8).map(
+    range0(8).map(
       (i) =>
         (matrix[i][7] =
           matrix[dimensions - i - 1][7] =
@@ -43,18 +43,18 @@ let applyTimingPatterns = (matrix: (boolean | null)[][]) =>
   )
 
 let applyDarkModule = (matrix: (boolean | null)[][]) =>
-  (matrix[matrix.length - 8][8] = true)
+  ((matrix.at(-8) as boolean[])[8] = true)
 
 let applyReservedAreas = (matrix: (boolean | null)[][], version: number) => {
   let dimensions = matrix.length
-  ;[...range(0, 9), ...range(dimensions - 8, dimensions)].map(
+  ;[range0(9), range(dimensions - 8, dimensions)].flat().map(
     (i) => (matrix[i][8] = matrix[8][i] = false),
   )
 
   //for version >=7 codes add additional areas
   if (version >= 7)
-    range(0, 3).map((i) =>
-      range(0, 6).map(
+    range0(3).map((i) =>
+      range0(6).map(
         (j) =>
           (matrix[dimensions - 11 + i][j] = matrix[j][dimensions - 11 + i] =
             false),
@@ -65,38 +65,27 @@ let applyReservedAreas = (matrix: (boolean | null)[][], version: number) => {
 let applyAlignmentPatterns = (
   matrix: (boolean | null)[][],
   locations: number[],
-) => {
-  let drawPattern = (x: number, y: number) => {
-    range(0, 3).map((j) =>
-      range(j, 5 - j).map(
-        (i) =>
-          (matrix[y + j][x + i] =
-            matrix[y + 4 - j][x + i] =
-            matrix[y + i][x + j] =
-            matrix[y + i][x + 4 - j] =
-              j % 2 == 0),
-      ),
-    )
-  }
-
-  let [minLocation, maxLocation] = [
-    Math.min(...locations),
-    Math.max(...locations),
-  ]
-  locations
-    .map((x, i, array) => array.map((y) => [x, y])) //all coordinate combinations
-    .flat()
-    .filter(
-      //do not draw if it overlaps the finder patterns
-      ([x, y]) =>
-        !(
-          (x === minLocation && (y === minLocation || y === maxLocation)) ||
-          (y === minLocation && (x === minLocation || x === maxLocation))
+) =>
+  locations.map((x, i) =>
+    locations
+      .slice(
+        +(i === 0 || i == locations.length - 1),
+        i > 0 ? locations.length : -1,
+      )
+      //all coordinate combinations,  do not draw if it overlaps the finder patterns
+      .map((y) =>
+        range0(3).map((j) =>
+          range(j, 5 - j).map(
+            (i) =>
+              (matrix[y - 2 + j][x - 2 + i] =
+                matrix[y + 2 - j][x - 2 + i] =
+                matrix[y - 2 + i][x - 2 + j] =
+                matrix[y - 2 + i][x + 2 - j] =
+                  j % 2 === 0),
+          ),
         ),
-    ) //add -2 offset, as location-coordinates use center, while we use top-left
-    .map(([x, y]) => [x - 2, y - 2])
-    .map(([x, y]) => drawPattern(x, y))
-}
+      ),
+  )
 
 export let getPatternMatrix = (config: QrParameters) => {
   let patternMatrix = createMatrix(config.dimensions)

@@ -1,4 +1,4 @@
-import { chunkString, range } from './utilities'
+import { chunkString, range, range0 } from './utilities'
 
 export enum EcLevels {
   L = 0,
@@ -374,7 +374,7 @@ export let getAlignmentPattern = (version: number) => {
 
   return version < 2
     ? []
-    : [6, ...range(0, elements + 1).map((i) => 6 + firstStep + i * nextStep)]
+    : [6, ...range0(elements + 1).map((i) => 6 + firstStep + i * nextStep)]
 }
 
 export let getGroups = (version: number, ecLevel: EcLevels) => {

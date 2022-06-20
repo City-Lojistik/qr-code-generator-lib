@@ -10,7 +10,6 @@ import expectedByteLong from './results/byteLong'
 import expectedRender from './results/render'
 import expected0 from './results/0'
 import fs from 'fs'
-import { getAlignmentPattern } from '../src/qr/definitions'
 // Edit an assertion and save to see HMR in action
 
 test('url', () => {

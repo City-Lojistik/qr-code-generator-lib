@@ -1,74 +1,67 @@
 import type { QrParameters } from '../parameters'
-import { chunkString, numToBits, pad0, encodeUtf8, range } from '../utilities'
+import {
+  chunkString,
+  numToBits,
+  pad0,
+  encodeUtf8,
+  range,
+  range0,
+} from '../utilities'
 import { getEcWords } from '../errorCorrection/reedSolomon'
 
-let encodeSymbols = (content: string) => {
-  return [...encodeUtf8(content)].map((el) => numToBits(el, 8)).join('')
-}
-let createBlocks = (config: QrParameters, encodedData: number[]) => {
-  let currentElement = 0
-  return config.groups
-    .map((group) => {
-      return range(0, group.blocks).map((_) =>
-        range(0, group.wordsPerBlock).map((_) => encodedData[currentElement++]),
-      )
-    })
+let encodeSymbols = (content: string) =>
+  encodeUtf8(content)
+    .map((el) => numToBits(el, 8))
+    .join('')
+
+let currentElement: number
+let createBlocks = (config: QrParameters, encodedData: number[]) => (
+  (currentElement = 0),
+  config.groups
+    .map((group) =>
+      range0(group.blocks).map((i) =>
+        range0(group.wordsPerBlock).map((j) => encodedData[currentElement++]),
+      ),
+    )
     .flat()
-}
-
-let interleave = (blocks: number[][]) => {
-  let maxLength = Math.max(...blocks.map((b) => b.length))
-  let result: number[] = []
-
-  range(0, maxLength).map((i) =>
-    range(0, blocks.length).map((j) =>
-      i < blocks[j].length ? result.push(blocks[j][i]) : 0,
+)
+let result: number[]
+let interleave = (blocks: number[][]) => (
+  (result = []),
+  range0(blocks.length).map((j) =>
+    range0(blocks[j].length).map(
+      (i) => (result[i * blocks.length + j] = blocks[j][i]),
     ),
-  )
+  ),
+  result
+)
+let blocks, bits
+export let encode = (config: QrParameters, content: string) => (
+  (blocks = createBlocks(
+    config,
+    chunkString(
+      fillUpBits(
+        config.requiredNumberOfBits,
+        '0100' +
+          numToBits(content.length, config.characterCountBits) +
+          encodeSymbols(content),
+      ),
+      8,
+    ).map((el) => parseInt(el, 2)),
+  )),
+  [
+    interleave(blocks),
+    interleave(blocks.map((b) => getEcWords(b, config.groups[0].ecPerBlock))),
+  ]
+    .flat()
+    .map((uint) => numToBits(uint, 8))
+    .join('') + pad0(config.remainderBits)
+)
 
-  return result
-}
-
-export let encode = (config: QrParameters, content: string) => {
-  let encodedData = chunkString(
-    fillUpBits(
-      config,
-      prefix(config.characterCountBits, content) + encodeSymbols(content),
-    ),
-    8,
-  )
-  let byteArray = encodedData.map((el) => parseInt(el, 2))
-
-  let blocks = createBlocks(config, byteArray)
-
-  let ecBlocks = blocks.map((b) => getEcWords(b, config.groups[0].ecPerBlock))
-  byteArray = interleave(blocks)
-  let ecByteArray = interleave(ecBlocks)
-
-  let bits =
-    [...byteArray, ...ecByteArray]
-      .map((uint) => numToBits(uint, 8))
-      .flat()
-      .join('') + suffix(config.remainderBits)
-
+let fillUpBits = (requiredNumberOfBits: number, bits: string) => {
+  bits += pad0(Math.min(requiredNumberOfBits - bits.length, 4)) //fill up to 0000
+  bits += pad0(8 - (bits.length % 8)) //fill up to be multiple of 8
   return bits
-}
-
-let fillUpBits = (config: QrParameters, bits: string) => {
-  let diff = config.requiredNumberOfBits - bits.length
-  if (diff > 0) {
-    bits += pad0(Math.min(diff, 4)) //fill up to 0000
-    bits += pad0(8 - (bits.length % 8)) //fill up to be multiple of 8
-
-    while (bits.length < config.requiredNumberOfBits)
-      bits += (60433).toString(2) // '1110110000010001' //fill up until required number of bits
-  }
-  return bits.substr(0, config.requiredNumberOfBits)
-}
-
-let prefix = (characterCountBits: number, content: string) => {
-  return '0100' + numToBits(content.length, characterCountBits)
-}
-let suffix = (remainderBits: number) => {
-  return pad0(remainderBits)
+    .padEnd(requiredNumberOfBits, '1110110000010001')
+    .substr(0, requiredNumberOfBits)
 }
