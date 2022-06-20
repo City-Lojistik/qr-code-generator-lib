@@ -2,10 +2,10 @@ import type { QrParameters } from '../parameters'
 import { chunkString, numToBits, pad0, encodeUtf8, range } from '../utilities'
 import { getEcWords } from '../errorCorrection/reedSolomon'
 
-const encodeSymbols = (content: string) => {
+let encodeSymbols = (content: string) => {
   return [...encodeUtf8(content)].map((el) => numToBits(el, 8)).join('')
 }
-const createBlocks = (config: QrParameters, encodedData: number[]) => {
+let createBlocks = (config: QrParameters, encodedData: number[]) => {
   let currentElement = 0
   return config.groups
     .map((group) => {
@@ -16,9 +16,9 @@ const createBlocks = (config: QrParameters, encodedData: number[]) => {
     .flat()
 }
 
-const interleave = (blocks: number[][]) => {
-  const maxLength = Math.max(...blocks.map((b) => b.length))
-  const result = []
+let interleave = (blocks: number[][]) => {
+  let maxLength = Math.max(...blocks.map((b) => b.length))
+  let result = []
   for (let i = 0; i < maxLength; i++)
     for (let j = 0; j < blocks.length; j++)
       if (i < blocks[j].length) result.push(blocks[j][i])
@@ -26,7 +26,7 @@ const interleave = (blocks: number[][]) => {
   return result
 }
 
-export const encode = (config: QrParameters, content: string) => {
+export let encode = (config: QrParameters, content: string) => {
   let encodedData = chunkString(
     fillUpBits(
       config,
@@ -36,9 +36,9 @@ export const encode = (config: QrParameters, content: string) => {
   )
   let byteArray = encodedData.map((el) => parseInt(el, 2))
 
-  const blocks = createBlocks(config, byteArray)
+  let blocks = createBlocks(config, byteArray)
 
-  const ecBlocks = blocks.map((b) => getEcWords(b, config.groups[0].ecPerBlock))
+  let ecBlocks = blocks.map((b) => getEcWords(b, config.groups[0].ecPerBlock))
   byteArray = interleave(blocks)
   let ecByteArray = interleave(ecBlocks)
 
@@ -51,8 +51,8 @@ export const encode = (config: QrParameters, content: string) => {
   return bits
 }
 
-const fillUpBits = (config: QrParameters, bits: string) => {
-  const diff = config.requiredNumberOfBits - bits.length
+let fillUpBits = (config: QrParameters, bits: string) => {
+  let diff = config.requiredNumberOfBits - bits.length
   if (diff > 0) {
     bits += pad0(Math.min(diff, 4)) //fill up to 0000
     bits += pad0(8 - (bits.length % 8)) //fill up to be multiple of 8
@@ -63,9 +63,9 @@ const fillUpBits = (config: QrParameters, bits: string) => {
   return bits.substr(0, config.requiredNumberOfBits)
 }
 
-const prefix = (characterCountBits: number, content: string) => {
+let prefix = (characterCountBits: number, content: string) => {
   return '0100' + numToBits(content.length, characterCountBits)
 }
-const suffix = (remainderBits: number) => {
+let suffix = (remainderBits: number) => {
   return pad0(remainderBits)
 }

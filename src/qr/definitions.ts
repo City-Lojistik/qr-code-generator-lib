@@ -8,7 +8,7 @@ export enum EcLevels {
 }
 
 //interleaved data --> ecPerBlock, wordsPerBlock
-const qrDefinitionTable = chunkString(
+let qrDefinitionTable = chunkString(
   '0011030906060a020325091a14141a0908441834100a1406126710231816090218921633100814041056091916111a0812651022100718061682142914101807219a1427120916051056183316111a081268213a1a1416051678142718121a0718911428161214042199163012091605147316312116160516831a35161121081a911a361a141a0721a318331a141a071a971834181318061a91183121161a081a9a18321a1421091a951a362116160621a41a372116210821a01a352116210918901a37211621081a981a361a14210921a51a352115210821a01a3521162108219a1a352115210821991a372116210821991a362116210821991a362116210821991a362116210821991a362116210921a41a372116210821a41a372116210821a51a362116210821a51a362116210821a01a372116210821a11a3721162108',
   2,
 ).map((s) => parseInt(s, 11) + 7)
@@ -335,19 +335,19 @@ const qrDefinitionTable = chunkString(
   15,
 ]*/
 
-export const getDimensions = (version: number) =>
+export let getDimensions = (version: number) =>
   //return (version - 1) * 4 + 21
   4 * version + 17
 
-const getSupportedBits = (version: number) => {
+let getSupportedBits = (version: number) => {
   let dimensions = getDimensions(version)
 
-  const alignmentElementsDimensions = 2 + (0 | (version / 7))
-  const alignmentModules =
+  let alignmentElementsDimensions = 2 + (0 | (version / 7))
+  let alignmentModules =
     (5 * alignmentElementsDimensions - 1) *
       (5 * alignmentElementsDimensions - 1) -
     56
-  const versionInfoModules = 36
+  let versionInfoModules = 36
 
   return (
     dimensions * dimensions -
@@ -358,14 +358,13 @@ const getSupportedBits = (version: number) => {
   )
 }
 
-export const getRemainderBits = (version: number) =>
+export let getRemainderBits = (version: number) =>
   getSupportedBits(version) % 8
 
-export const getAlignmentPattern = (version: number) => {
-  if (version <= 1) return []
-  const last = 4 + 4 * version
-  const elements = 0 | (version / 7)
-  const startStep = 0 | (last / (elements + 1))
+export let getAlignmentPattern = (version: number) => {
+  let last = 4 + 4 * version
+  let elements = 0 | (version / 7)
+  let startStep = 0 | (last / (elements + 1))
 
   let firstStep = startStep
   let nextStep = firstStep
@@ -375,10 +374,12 @@ export const getAlignmentPattern = (version: number) => {
     firstStep = last - nextStep * elements
   }
 
-  return [6, ...range(0, elements + 1).map((i) => 6 + firstStep + i * nextStep)]
+  return version < 2
+    ? []
+    : [6, ...range(0, elements + 1).map((i) => 6 + firstStep + i * nextStep)]
 }
 
-export const getGroups = (version: number, ecLevel: EcLevels) => {
+export let getGroups = (version: number, ecLevel: EcLevels) => {
   let index = version * 8 - 8 + ecLevel * 2,
     ecPerBlock = qrDefinitionTable[index],
     wordsPerBlock = qrDefinitionTable[++index],
@@ -387,20 +388,18 @@ export const getGroups = (version: number, ecLevel: EcLevels) => {
     x = 0,
     sumBlock = ecPerBlock + wordsPerBlock
 
-  for (; x < 57; x++) {
-    let candidate = (bytes - sumBlock * x) / (sumBlock + 1)
-    if ((y = candidate) % 1 === 0) break
-  }
+  for (; x < 57; x++)
+    if ((y = (bytes - sumBlock * x) / (sumBlock + 1)) % 1 === 0) break
 
-  const result = [{ blocks: x, wordsPerBlock, ecPerBlock }]
+  let result = [{ blocks: x, wordsPerBlock, ecPerBlock }]
   y > 0 && wordsPerBlock++
   result.push({ blocks: y, wordsPerBlock, ecPerBlock })
 
   return result
 }
 
-export const getChracterCountBits = (version: number) => (version <= 9 ? 8 : 16)
+export let getChracterCountBits = (version: number) => (version <= 9 ? 8 : 16)
 
-export const getRequiredNumberOfBits = (
+export let getRequiredNumberOfBits = (
   groups: { wordsPerBlock: number; blocks: number }[],
 ) => groups.reduce((acc, val) => acc + val.wordsPerBlock * val.blocks, 0) * 8

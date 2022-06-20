@@ -2,17 +2,17 @@ import { divPoly } from '../errorCorrection/galoisField'
 import { QrParameters } from '../parameters'
 import { bitsToArray, chunkString, numToBits, pad0, range } from '../utilities'
 
-export const applyFormatInformation = (
+export let applyFormatInformation = (
   config: QrParameters,
   mask: number,
   matrix: (boolean | null)[][],
 ) => {
-  const bits = chunkString('01001110', 2)[config.ecLevel] + numToBits(mask, 3)
-  const message = bitsToArray(bits + pad0(10))
-  const generator = bitsToArray('10100110111')
-  const remainder = divPoly(message, generator).join('')
+  let bits = chunkString('01001110', 2)[config.ecLevel] + numToBits(mask, 3)
+  let message = bitsToArray(bits + pad0(10))
+  let generator = bitsToArray('10100110111')
+  let remainder = divPoly(message, generator).join('')
 
-  const formatInfo = numToBits(
+  let formatInfo = numToBits(
     parseInt(bits + pad0(10, remainder), 2) ^ 21522,
     15,
   )
@@ -23,7 +23,7 @@ export const applyFormatInformation = (
   ;[...range(0, 8 + 1), ...range(matrix.length - 7, matrix.length)].forEach(
     (h, i, arr) => {
       //vertical
-      const v = arr[arr.length - 1 - i]
+      let v = arr[arr.length - 1 - i]
 
       if (h !== 6) matrix[8][h] = formatInfo[a++] === '1'
       if (v !== 6 && v !== matrix.length - 8)
@@ -33,16 +33,16 @@ export const applyFormatInformation = (
   return matrix
 }
 
-export const applyVerisonInformation = (
+export let applyVerisonInformation = (
   config: QrParameters,
   matrix: (boolean | null)[][],
 ) => {
   if (config.version < 7) return matrix
-  const generator = bitsToArray('1111100100101')
-  const bits = numToBits(config.version, 6)
-  const message = bitsToArray(bits + pad0(12))
-  const remainder = divPoly(message, generator).join('')
-  const versionInfo = bits + pad0(12, remainder)
+  let generator = bitsToArray('1111100100101')
+  let bits = numToBits(config.version, 6)
+  let message = bitsToArray(bits + pad0(12))
+  let remainder = divPoly(message, generator).join('')
+  let versionInfo = bits + pad0(12, remainder)
   /* for (let x = 0; x < 6; x++)
     for (let y = 0; y < 3; y++)
       matrix[matrix.length - 9 - y][5 - x] = matrix[5 - x][

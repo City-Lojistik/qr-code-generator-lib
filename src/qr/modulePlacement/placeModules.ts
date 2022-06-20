@@ -11,19 +11,19 @@ enum MoveDirection {
   Down = 1,
 }
 
-const applyData = (patternMatrix: (boolean | null)[][], data: string) => {
+let applyData = (patternMatrix: (boolean | null)[][], data: string) => {
   let dataMatrix = createMatrix(patternMatrix.length)
-  const MAX = patternMatrix.length - 1
+  let MAX = patternMatrix.length - 1
   let x = MAX
-  let dx = 0
   let y = MAX
+  let dx = 0
   let d = 0
   let direction: MoveDirection = MoveDirection.Up
 
   while (d < data.length) {
-    if (patternMatrix[y][x - dx] === null)
-      //only empty fields, otherwise skip
-      dataMatrix[y][x - dx] = data[d++] === '1'
+    patternMatrix[y][x - dx] === null &&
+      (dataMatrix[y][x - dx] = data[d++] === '1')
+    //only empty fields, otherwise skip
 
     if (dx === 1) {
       y += direction //go up or down
@@ -35,20 +35,16 @@ const applyData = (patternMatrix: (boolean | null)[][], data: string) => {
       }
     }
     dx ^= 1 //alternate from right to left in each column
-
-    if (x >= 6 && x <= 7)
-      //next to vertical timing pattern? -> skip
-      x = 5
+    //next to vertical timing pattern? -> skip
+    x >= 6 && x <= 7 && (x = 5)
   }
   return dataMatrix
 }
 
-export const place = (config: QrParameters, data: string) => {
+export let place = (config: QrParameters, data: string) => {
   let patternMatrix = getPatternMatrix(config)
   let dataMatrix = applyData(patternMatrix, data)
   let { mask, matrix } = applyMasking(patternMatrix, dataMatrix)
-  let result = applyFormatInformation(config, mask, matrix)
-  result = applyVersionInformation(config, matrix)
-
-  return result
+  applyFormatInformation(config, mask, matrix)
+  return applyVersionInformation(config, matrix)
 }

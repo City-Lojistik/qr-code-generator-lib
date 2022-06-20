@@ -8,8 +8,8 @@
   "private": true,
   "type": "module",
   "devDependencies": {
-    "vitest": "^0.15.1",
-    "vite": "^2.9.12"
+    "vite": "^2.9.12",
+    "vitest": "^0.15.1"
   },
   "scripts": {
     "build": "vite build",

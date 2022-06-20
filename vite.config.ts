@@ -2,18 +2,23 @@ import { defineConfig } from 'vite'
 import path from 'path'
 
 export default defineConfig({
+ /* esbuild: {
+    minify: true,
+  },*/
   build: {
-    target: 'esnext',
+    target: 'modules',
     lib: {
       entry: path.resolve(__dirname, 'index.ts'),
-      name: 'qrcode-generator-lib',
+      name: 'qrcode',
       fileName: (format) => `qrcode-generator-lib.${format}.js`,
+      formats: ['es', 'umd', 'cjs', 'iife'],
     },
+
     minify: 'terser',
     terserOptions: {
       mangle: {
         properties: {
-          reserved: ['encode'],
+          reserved: ['getMatrix', 'render'],
         },
       },
       compress: {

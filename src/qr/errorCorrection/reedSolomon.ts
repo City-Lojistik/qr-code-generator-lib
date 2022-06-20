@@ -1,6 +1,6 @@
 import { range } from '../utilities'
 import { divPoly, generatorPoly } from './galoisField'
-export const getEcWords = (
+export let getEcWords = (
   message: number[],
   ecCodeWordsCount: number,
 ): number[] => {

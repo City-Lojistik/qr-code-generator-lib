@@ -1,48 +1,52 @@
 import { QrParameters } from '../parameters'
 import { createMatrix, range } from '../utilities'
 
-const applyFinderPatterns = (matrix: (boolean | null)[][]) => {
-  const dimensions = matrix.length
-  const drawSquares = (x: number, y: number) => {
-    for (let j = 0; j < 3; j++)
-      for (let i = 0 + j; i < 7 - j; i++)
+let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
+  let dimensions = matrix.length
+  let dimensionsSubSeven = dimensions - 7
+  let drawSquares = (x: number, y: number) => {
+    range(0, 3).map((j) => {
+      for (let i = j; i < 7 - j; i++)
         matrix[y + j][x + i] =
           matrix[y + 6 - j][x + i] =
           matrix[y + i][x + j] =
           matrix[y + i][x + 6 - j] =
             j % 2 == 0
 
-    matrix[y + 3][x + 3] = true
+      matrix[y + 3][x + 3] = true
+    })
   }
 
-  const drawGapNextToSquares = () => {
-    for (let i = 0; i < 8; i++)
-      matrix[i][7] =
-        matrix[dimensions - i - 1][7] =
-        matrix[7][i] =
-        matrix[7][dimensions - i - 1] =
-        matrix[dimensions - 7 - 1][i] =
-        matrix[i][dimensions - 7 - 1] =
-          false
+  let drawGapNextToSquares = () => {
+    range(0, 8).map(
+      (i) =>
+        (matrix[i][7] =
+          matrix[dimensions - i - 1][7] =
+          matrix[7][i] =
+          matrix[7][dimensions - i - 1] =
+          matrix[dimensionsSubSeven - 1][i] =
+          matrix[i][dimensionsSubSeven - 1] =
+            false),
+    )
   }
 
   drawSquares(0, 0)
-  drawSquares(0, dimensions - 7)
-  drawSquares(dimensions - 7, 0)
+  drawSquares(0, dimensionsSubSeven)
+  drawSquares(dimensionsSubSeven, 0)
   drawGapNextToSquares()
 }
 
-const applyTimingPatterns = (matrix: (boolean | null)[][]) => {
+let applyTimingPatterns = (matrix: (boolean | null)[][]) => {
   for (let i = 7; i < matrix.length - 7; i++)
     matrix[6][i] = matrix[i][6] = i % 2 === 0
 }
 
-const applyDarkModule = (matrix: (boolean | null)[][]) => {
+let applyDarkModule = (matrix: (boolean | null)[][]) => {
   matrix[matrix.length - 8][8] = true
 }
 
-const applyReservedAreas = (version: number, matrix: (boolean | null)[][]) => {
-  const dimensions = matrix.length
+let applyReservedAreas = (version: number, matrix: (boolean | null)[][]) => {
+  let dimensions = matrix.length
   ;[...range(0, 9), ...range(dimensions - 8, dimensions)].forEach(
     (i) => (matrix[i][8] = matrix[8][i] = false),
   )
@@ -54,11 +58,11 @@ const applyReservedAreas = (version: number, matrix: (boolean | null)[][]) => {
         matrix[dimensions - 11 + i][j] = matrix[j][dimensions - 11 + i] = false
 }
 
-const applyAlignmentPatterns = (
+let applyAlignmentPatterns = (
   locations: number[],
   matrix: (boolean | null)[][],
 ) => {
-  const drawPattern = (x: number, y: number) => {
+  let drawPattern = (x: number, y: number) => {
     for (let j = 0; j < 3; j++)
       for (let i = 0 + j; i < 5 - j; i++)
         matrix[y + j][x + i] =
@@ -68,7 +72,7 @@ const applyAlignmentPatterns = (
             j % 2 == 0
   }
 
-  const [minLocation, maxLocation] = [
+  let [minLocation, maxLocation] = [
     Math.min(...locations),
     Math.max(...locations),
   ]
@@ -87,7 +91,7 @@ const applyAlignmentPatterns = (
     .forEach(([x, y]) => drawPattern(x, y))
 }
 
-export const getPatternMatrix = (config: QrParameters) => {
+export let getPatternMatrix = (config: QrParameters) => {
   let patternMatrix = createMatrix(config.dimensions)
   applyFinderPatterns(patternMatrix)
   applyAlignmentPatterns(config.alignmentPattern, patternMatrix)

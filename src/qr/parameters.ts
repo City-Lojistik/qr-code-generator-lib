@@ -19,7 +19,7 @@ export type QrParameters = {
   groups: Array<{ blocks: number; wordsPerBlock: number; ecPerBlock: number }>
 }
 
-const versionLookup: {
+let versionLookup: {
   ecLevel: number
   version: number
   groups: { blocks: number; wordsPerBlock: number; ecPerBlock: number }[]
@@ -30,14 +30,14 @@ const versionLookup: {
   dimensions: number
   alignmentPattern: number[]
 }[] = []
-const createVersionLookup = () => {
+let createVersionLookup = () => {
   let requiredNumberOfBits,
     characterCountBits,
     upperLimit,
     groups,
     version = 0
   for (; ++version <= 40; ) {
-    range(0, 1/*3*/).forEach((ecLevel) => {
+    range(0, 4).forEach((ecLevel) => {
       groups = getGroups(version, ecLevel)
       requiredNumberOfBits = getRequiredNumberOfBits(groups)
       characterCountBits = getChracterCountBits(version)
@@ -59,8 +59,8 @@ const createVersionLookup = () => {
 }
 createVersionLookup()
 
-const getSmallestVersion = (length: number, ecLevel = EcLevels.L) => {
-  const lookup = versionLookup.filter(
+let getSmallestVersion = (length: number, ecLevel = EcLevels.L) => {
+  let lookup = versionLookup.filter(
     (v) => v.ecLevel === ecLevel && v.upperLimit >= length,
   )
 
@@ -70,7 +70,7 @@ const getSmallestVersion = (length: number, ecLevel = EcLevels.L) => {
   return lookup[0]
 }
 
-export const getParameters = (
+export let getParameters = (
   content: string,
   ecLevel = EcLevels.L,
 ): QrParameters => {

@@ -1,4 +1,4 @@
-export const render = (matrix: (boolean | null)[][]) => {
+export let render = (matrix: (boolean | null)[][]) => {
   let d = ''
   let ml = matrix.length
   matrix.forEach((row, y) => {

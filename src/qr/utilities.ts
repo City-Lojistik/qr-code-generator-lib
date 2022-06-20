@@ -1,31 +1,31 @@
-export const chunkString = (content: string, length: number): string[] => {
+export let chunkString = (content: string, length: number): string[] => {
   return range(0, Math.ceil(content.length / length)).map((i) =>
     content.substr(i++ * length, length),
   )
 }
 
-export const pad0 = (count: number, content: string = '') => {
+export let pad0 = (count: number, content: string = '') => {
   return content.padStart(count, '0')
 }
 
-export const numToBits = (content: number, count: number) => {
+export let numToBits = (content: number, count: number) => {
   return pad0(count, content.toString(2))
 }
-export const bitsToArray = (bits: string) => {
+export let bitsToArray = (bits: string) => {
   return [...bits].map(Number)
 }
 
-export const range = (from: number, to: number): number[] => {
+export let range = (from: number, to: number): number[] => {
   return Array.from({ length: to - from }, (_, i) => i + from)
 }
-export const createMatrix = (dimensions: number): (boolean | null)[][] => {
-  const base = range(0, dimensions).map((_) => null)
+export let createMatrix = (dimensions: number): (boolean | null)[][] => {
+  let base = range(0, dimensions).map((_) => null)
   return base.map((_) => base.slice())
 }
-export const cloneMatrix = (matrix: (boolean | null)[][]) => {
+export let cloneMatrix = (matrix: (boolean | null)[][]) => {
   return matrix.slice().map((m) => m.slice())
 }
-export const mergeMatrices = (
+export let mergeMatrices = (
   matrix1: (boolean | null)[][],
   matrix2: (boolean | null)[][],
 ): (boolean | null)[][] => {
@@ -36,12 +36,11 @@ export const mergeMatrices = (
   )
   return result
 }
+/*
+export let MatrixIterationDirectionHorizontal = 0
+export let MatrixIterationDirectionVertical = 1*/
 
-export enum MatrixIterationDirection {
-  Horizontal,
-  Vertical,
-}
-export const iterateOverMatrix = (
+export let iterateOverMatrix = (
   matrix: (boolean | null)[][],
   fn: (
     value: boolean | null,
@@ -50,12 +49,12 @@ export const iterateOverMatrix = (
     matrix: (boolean | null)[][],
   ) => void,
   fnSecondary: (index: number, matrix: (boolean | null)[][]) => void = () => {},
-  direction = MatrixIterationDirection.Horizontal,
+  direction = 0,
 ) => {
   matrix.forEach(
     (row, y) => (
       row.forEach((val, x) =>
-        direction === MatrixIterationDirection.Horizontal
+        direction === 0
           ? fn(val, x, y, matrix)
           : fn(matrix[x][y], y, x, matrix),
       ),
@@ -64,7 +63,7 @@ export const iterateOverMatrix = (
   )
 }
 
-export const encodeUtf8 = (s: string) => {
+export let encodeUtf8 = (s: string) => {
   let i = 0,
     ci = 0,
     bytes = [],

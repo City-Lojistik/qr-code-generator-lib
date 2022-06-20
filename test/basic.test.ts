@@ -17,6 +17,7 @@ test('url', () => {
   const result = getMatrix(
     'https://github.com/AlexRuppert/bookmarklet-generator/blob/aaea8a10c11cc3df07517d9112d972999e9e49a1/README.md',
   )
+// fs.writeFileSync('./test/results/url.js', JSON.stringify(result, null, 2))
   expect(result).toStrictEqual(expectedUrl)
 })
 test('byte', () => {
