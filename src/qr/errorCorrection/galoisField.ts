@@ -17,8 +17,8 @@ let mul = (x: number, y: number) => {
 
 let mulPoly = (poly1: number[], poly2: number[]) => {
   let result: number[] = []
-  poly1.forEach((p1, j) =>
-    poly2.forEach((p2, i) => (result[j + i] ^= mul(p2, p1))),
+  poly1.map((p1, j) =>
+    poly2.map((p2, i) => (result[j + i] ^= mul(p2, p1))),
   )
   return result
 }
@@ -28,8 +28,11 @@ export let [exponents, logs] = generateExponentsLookUpTables()
 export let divPoly = (dividend: number[], divisor: number[]) => {
   let result = dividend.slice()
   let dl = divisor.length - 1
-  for (let i = 0; i < dividend.length - dl; i++)
-    for (let j = 1; j < dl + 1; j++) result[i + j] ^= mul(divisor[j], result[i])
+
+  range(0, dividend.length - dl).map((i) =>
+    range(1, dl + 1).map((j) => (result[i + j] ^= mul(divisor[j], result[i]))),
+  )
+
   //remainder
   return result.slice(result.length - dl)
 }

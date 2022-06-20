@@ -6,13 +6,14 @@ let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
   let dimensionsSubSeven = dimensions - 7
   let drawSquares = (x: number, y: number) => {
     range(0, 3).map((j) => {
-      for (let i = j; i < 7 - j; i++)
-        matrix[y + j][x + i] =
-          matrix[y + 6 - j][x + i] =
-          matrix[y + i][x + j] =
-          matrix[y + i][x + 6 - j] =
-            j % 2 == 0
-
+      range(j, 7 - j).map(
+        (i) =>
+          (matrix[y + j][x + i] =
+            matrix[y + 6 - j][x + i] =
+            matrix[y + i][x + j] =
+            matrix[y + i][x + 6 - j] =
+              j % 2 == 0),
+      )
       matrix[y + 3][x + 3] = true
     })
   }
@@ -36,40 +37,46 @@ let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
   drawGapNextToSquares()
 }
 
-let applyTimingPatterns = (matrix: (boolean | null)[][]) => {
-  for (let i = 7; i < matrix.length - 7; i++)
-    matrix[6][i] = matrix[i][6] = i % 2 === 0
-}
+let applyTimingPatterns = (matrix: (boolean | null)[][]) =>
+  range(7, matrix.length - 7).map(
+    (i) => (matrix[6][i] = matrix[i][6] = i % 2 === 0),
+  )
 
-let applyDarkModule = (matrix: (boolean | null)[][]) => {
-  matrix[matrix.length - 8][8] = true
-}
+let applyDarkModule = (matrix: (boolean | null)[][]) =>
+  (matrix[matrix.length - 8][8] = true)
 
-let applyReservedAreas = (version: number, matrix: (boolean | null)[][]) => {
+let applyReservedAreas = (matrix: (boolean | null)[][], version: number) => {
   let dimensions = matrix.length
-  ;[...range(0, 9), ...range(dimensions - 8, dimensions)].forEach(
+  ;[...range(0, 9), ...range(dimensions - 8, dimensions)].map(
     (i) => (matrix[i][8] = matrix[8][i] = false),
   )
 
   //for version >=7 codes add additional areas
   if (version >= 7)
-    for (let i = 0; i < 3; i++)
-      for (let j = 0; j < 6; j++)
-        matrix[dimensions - 11 + i][j] = matrix[j][dimensions - 11 + i] = false
+    range(0, 3).map((i) =>
+      range(0, 6).map(
+        (j) =>
+          (matrix[dimensions - 11 + i][j] = matrix[j][dimensions - 11 + i] =
+            false),
+      ),
+    )
 }
 
 let applyAlignmentPatterns = (
-  locations: number[],
   matrix: (boolean | null)[][],
+  locations: number[],
 ) => {
   let drawPattern = (x: number, y: number) => {
-    for (let j = 0; j < 3; j++)
-      for (let i = 0 + j; i < 5 - j; i++)
-        matrix[y + j][x + i] =
-          matrix[y + 4 - j][x + i] =
-          matrix[y + i][x + j] =
-          matrix[y + i][x + 4 - j] =
-            j % 2 == 0
+    range(0, 3).map((j) =>
+      range(j, 5 - j).map(
+        (i) =>
+          (matrix[y + j][x + i] =
+            matrix[y + 4 - j][x + i] =
+            matrix[y + i][x + j] =
+            matrix[y + i][x + 4 - j] =
+              j % 2 == 0),
+      ),
+    )
   }
 
   let [minLocation, maxLocation] = [
@@ -88,14 +95,14 @@ let applyAlignmentPatterns = (
         ),
     ) //add -2 offset, as location-coordinates use center, while we use top-left
     .map(([x, y]) => [x - 2, y - 2])
-    .forEach(([x, y]) => drawPattern(x, y))
+    .map(([x, y]) => drawPattern(x, y))
 }
 
 export let getPatternMatrix = (config: QrParameters) => {
   let patternMatrix = createMatrix(config.dimensions)
   applyFinderPatterns(patternMatrix)
-  applyAlignmentPatterns(config.alignmentPattern, patternMatrix)
-  applyReservedAreas(config.version, patternMatrix)
+  applyAlignmentPatterns(patternMatrix, config.alignmentPattern)
+  applyReservedAreas(patternMatrix, config.version)
   applyTimingPatterns(patternMatrix)
   applyDarkModule(patternMatrix)
   return patternMatrix

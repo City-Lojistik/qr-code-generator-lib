@@ -15,7 +15,7 @@ let getLineGroupScore = (matrix: (boolean | null)[][]) => {
     currentRun = 0
   }
   //horizontal & vertical
-  ;[0, 1].forEach((dir) => {
+  ;[0, 1].map((dir) => {
     iterateOverMatrix(
       matrix,
       (value) => {
@@ -64,7 +64,7 @@ let getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
 
   let score = 0
   let evaluateFinderConfusionCondition = (value: boolean | null) => {
-    patterns.forEach((pattern) => {
+    patterns.map((pattern) => {
       pattern.current +=
         value === pattern.template[pattern.current] ? 1 : -pattern.current
       if (pattern.current >= pattern.template.length) {
@@ -74,11 +74,11 @@ let getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
     })
   }
   //horizontal & vertical
-  ;[0, 1].forEach((dir) => {
+  ;[0, 1].map((dir) => {
     iterateOverMatrix(
       matrix,
       (value) => evaluateFinderConfusionCondition(value),
-      () => patterns.forEach((pattern) => (pattern.current = 0)),
+      () => patterns.map((pattern) => (pattern.current = 0)),
       dir,
     )
   })

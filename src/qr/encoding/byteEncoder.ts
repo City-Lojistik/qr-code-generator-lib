@@ -18,10 +18,13 @@ let createBlocks = (config: QrParameters, encodedData: number[]) => {
 
 let interleave = (blocks: number[][]) => {
   let maxLength = Math.max(...blocks.map((b) => b.length))
-  let result = []
-  for (let i = 0; i < maxLength; i++)
-    for (let j = 0; j < blocks.length; j++)
-      if (i < blocks[j].length) result.push(blocks[j][i])
+  let result: number[] = []
+
+  range(0, maxLength).map((i) =>
+    range(0, blocks.length).map((j) =>
+      i < blocks[j].length ? result.push(blocks[j][i]) : 0,
+    ),
+  )
 
   return result
 }

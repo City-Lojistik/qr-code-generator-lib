@@ -1,7 +1,7 @@
 export let render = (matrix: (boolean | null)[][]) => {
   let d = ''
   let ml = matrix.length
-  matrix.forEach((row, y) => {
+  matrix.map((row, y) => {
     let lastX = 0,
       x = 0,
       len

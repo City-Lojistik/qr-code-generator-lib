@@ -358,14 +358,12 @@ let getSupportedBits = (version: number) => {
   )
 }
 
-export let getRemainderBits = (version: number) =>
-  getSupportedBits(version) % 8
+export let getRemainderBits = (version: number) => getSupportedBits(version) % 8
 
 export let getAlignmentPattern = (version: number) => {
   let last = 4 + 4 * version
   let elements = 0 | (version / 7)
   let startStep = 0 | (last / (elements + 1))
-
   let firstStep = startStep
   let nextStep = firstStep
 

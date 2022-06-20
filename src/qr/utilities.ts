@@ -51,9 +51,9 @@ export let iterateOverMatrix = (
   fnSecondary: (index: number, matrix: (boolean | null)[][]) => void = () => {},
   direction = 0,
 ) => {
-  matrix.forEach(
+  matrix.map(
     (row, y) => (
-      row.forEach((val, x) =>
+      row.map((val, x) =>
         direction === 0
           ? fn(val, x, y, matrix)
           : fn(matrix[x][y], y, x, matrix),
@@ -68,7 +68,7 @@ export let encodeUtf8 = (s: string) => {
     ci = 0,
     bytes = [],
     c
-  for (; ci != s.length; ci++) {
+  for (; ci < s.length; ci++) {
     c = s.charCodeAt(ci)
     if (c < 128) {
       bytes.push(c)

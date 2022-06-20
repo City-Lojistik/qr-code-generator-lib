@@ -20,7 +20,7 @@ export let applyFormatInformation = (
   let a = 0,
     b = 0
   //horizontal
-  ;[...range(0, 8 + 1), ...range(matrix.length - 7, matrix.length)].forEach(
+  ;[...range(0, 8 + 1), ...range(matrix.length - 7, matrix.length)].map(
     (h, i, arr) => {
       //vertical
       let v = arr[arr.length - 1 - i]
@@ -48,10 +48,20 @@ export let applyVerisonInformation = (
       matrix[matrix.length - 9 - y][5 - x] = matrix[5 - x][
         matrix.length - 9 - y
       ] = versionInfo[d++] === '1'*/
-  for (let i = 18; i--; ) {
+  /* for (let i = 18; i--; ) {
     let [x, y] = [matrix.length - 9 - (i % 3), 5 - (0 | (i / 3))]
     matrix[x][y] = matrix[y][x] = versionInfo[i] === '1'
-  }
+  }*/
+  let d = 0
+  range(0, 6).map((x) =>
+    range(0, 3).map(
+      (y) =>
+        (matrix[matrix.length - 9 - y][5 - x] = matrix[5 - x][
+          matrix.length - 9 - y
+        ] =
+          versionInfo[d++] === '1'),
+    ),
+  )
 
   return matrix
 }

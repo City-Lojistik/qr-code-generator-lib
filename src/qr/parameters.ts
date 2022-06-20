@@ -36,8 +36,9 @@ let createVersionLookup = () => {
     upperLimit,
     groups,
     version = 0
-  for (; ++version <= 40; ) {
-    range(0, 4).forEach((ecLevel) => {
+
+  range(1, 41).map((version) => {
+    range(0, 4).map((ecLevel) => {
       groups = getGroups(version, ecLevel)
       requiredNumberOfBits = getRequiredNumberOfBits(groups)
       characterCountBits = getChracterCountBits(version)
@@ -55,7 +56,7 @@ let createVersionLookup = () => {
         alignmentPattern: getAlignmentPattern(version),
       })
     })
-  }
+  })
 }
 createVersionLookup()
 
