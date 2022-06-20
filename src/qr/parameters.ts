@@ -30,20 +30,18 @@ const versionLookup: {
   dimensions: number
   alignmentPattern: number[]
 }[] = []
-function createVersionLookup() {
+const createVersionLookup = () => {
   let requiredNumberOfBits,
     characterCountBits,
     upperLimit,
     groups,
     version = 0
   for (; ++version <= 40; ) {
-    range(0, 3).forEach((ecLevel) => {
+    range(0, 1/*3*/).forEach((ecLevel) => {
       groups = getGroups(version, ecLevel)
       requiredNumberOfBits = getRequiredNumberOfBits(groups)
       characterCountBits = getChracterCountBits(version)
-      upperLimit = Math.floor(
-        (requiredNumberOfBits - (4 + characterCountBits)) / 8,
-      )
+      upperLimit = 0 | ((requiredNumberOfBits - (4 + characterCountBits)) / 8)
 
       versionLookup.push({
         ecLevel,
@@ -61,7 +59,7 @@ function createVersionLookup() {
 }
 createVersionLookup()
 
-function getSmallestVersion(length: number, ecLevel = EcLevels.L) {
+const getSmallestVersion = (length: number, ecLevel = EcLevels.L) => {
   const lookup = versionLookup.filter(
     (v) => v.ecLevel === ecLevel && v.upperLimit >= length,
   )
@@ -72,9 +70,9 @@ function getSmallestVersion(length: number, ecLevel = EcLevels.L) {
   return lookup[0]
 }
 
-export function getParameters(
+export const getParameters = (
   content: string,
   ecLevel = EcLevels.L,
-): QrParameters {
+): QrParameters => {
   return getSmallestVersion(encodeUtf8(content).length, ecLevel)
 }

@@ -1,4 +1,3 @@
-import getMatrix from './src/qr/matrixGenerator'
-
-const result = getMatrix('test')
-console.log(result)
+import { getMatrix } from './src/qr/matrixGenerator'
+import { render } from './src/renderer/svg/index'
+export { getMatrix, render }

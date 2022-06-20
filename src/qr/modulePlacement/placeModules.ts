@@ -11,7 +11,7 @@ enum MoveDirection {
   Down = 1,
 }
 
-function applyData(patternMatrix: (boolean|null)[][], data: string) {
+const applyData = (patternMatrix: (boolean | null)[][], data: string) => {
   let dataMatrix = createMatrix(patternMatrix.length)
   const MAX = patternMatrix.length - 1
   let x = MAX
@@ -43,7 +43,7 @@ function applyData(patternMatrix: (boolean|null)[][], data: string) {
   return dataMatrix
 }
 
-export function place(config: QrParameters, data: string) {
+export const place = (config: QrParameters, data: string) => {
   let patternMatrix = getPatternMatrix(config)
   let dataMatrix = applyData(patternMatrix, data)
   let { mask, matrix } = applyMasking(patternMatrix, dataMatrix)

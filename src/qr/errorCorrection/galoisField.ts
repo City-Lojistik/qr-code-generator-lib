@@ -1,6 +1,6 @@
 import { range } from '../utilities'
 
-function generateExponentsLookUpTables() {
+const generateExponentsLookUpTables = () => {
   const exponents: { [key: number]: number } = {}
   const logs: { [key: number]: number } = { 1: 0 }
   range(0, 255).reduce(
@@ -9,23 +9,23 @@ function generateExponentsLookUpTables() {
     ),
     1,
   )
-  return { exponents, logs }
+  return [exponents, logs]
 }
-function mul(x: number, y: number) {
+const mul = (x: number, y: number) => {
   return x * y === 0 ? 0 : exponents[(logs[x] + logs[y]) % 255]
 }
 
-function mulPoly(poly1: Uint8Array, poly2: number[]) {
+const mulPoly = (poly1: number[], poly2: number[]) => {
   let result: number[] = []
   poly1.forEach((p1, j) =>
     poly2.forEach((p2, i) => (result[j + i] ^= mul(p2, p1))),
   )
-  return Uint8Array.from(result)
+  return result
 }
 
-export const { exponents, logs } = generateExponentsLookUpTables()
+export const [exponents, logs] = generateExponentsLookUpTables()
 
-export function divPoly(dividend: Uint8Array, divisor: Uint8Array) {
+export const divPoly = (dividend: number[], divisor: number[]) => {
   let result = dividend.slice()
   let dl = divisor.length - 1
   for (let i = 0; i < dividend.length - dl; i++)
@@ -34,9 +34,9 @@ export function divPoly(dividend: Uint8Array, divisor: Uint8Array) {
   return result.slice(result.length - dl)
 }
 
-export function generatorPoly(n: number) {
+export const generatorPoly = (n: number) => {
   return range(0, n).reduce(
     (acc, i) => mulPoly(acc, [1, exponents[i /* % 255*/]]),
-    Uint8Array.from([1]),
+    [1],
   )
 }

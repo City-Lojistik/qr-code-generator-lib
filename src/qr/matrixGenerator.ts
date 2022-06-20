@@ -1,9 +1,9 @@
 import { getParameters } from './parameters'
 import { place } from './modulePlacement/placeModules'
-import { ByteEncoder } from './encoding/byteEncoder'
+import { encode } from './encoding/byteEncoder'
 
-export default function getMatrix(content: string) {
+export const getMatrix = (content: string) => {
   const config = getParameters(content)
-  let bitString = new ByteEncoder(config).encode(content)
+  let bitString = encode(config, content)
   return place(config, bitString)
 }

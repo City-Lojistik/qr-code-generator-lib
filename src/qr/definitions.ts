@@ -1,4 +1,4 @@
-import { chunkString } from './utilities'
+import { chunkString, range } from './utilities'
 
 export enum EcLevels {
   L = 0,
@@ -11,7 +11,8 @@ export enum EcLevels {
 const qrDefinitionTable = chunkString(
   '0011030906060a020325091a14141a0908441834100a1406126710231816090218921633100814041056091916111a0812651022100718061682142914101807219a1427120916051056183316111a081268213a1a1416051678142718121a0718911428161214042199163012091605147316312116160516831a35161121081a911a361a141a0721a318331a141a071a971834181318061a91183121161a081a9a18321a1421091a951a362116160621a41a372116210821a01a352116210918901a37211621081a981a361a14210921a51a352115210821a01a3521162108219a1a352115210821991a372116210821991a362116210821991a362116210821991a362116210821991a362116210921a41a372116210821a41a372116210821a51a362116210821a51a362116210821a01a372116210821a11a3721162108',
   2,
-).map((s) => parseInt(s, 11) + 7) /*[
+).map((s) => parseInt(s, 11) + 7)
+/*[
   7,
   19,
   10,
@@ -334,105 +335,72 @@ const qrDefinitionTable = chunkString(
   15,
 ]*/
 
-export function getDimensions(version: number) {
-  return (version - 1) * 4 + 21
-}
+export const getDimensions = (version: number) =>
+  //return (version - 1) * 4 + 21
+  4 * version + 17
 
-function getSupportedBits(version: number) {
-  const dimensions = getDimensions(version)
-  const versionInfoModules = version >= 7 ? 36 : 0
-  const alignmentElementsDimensions = 2 + Math.floor(version / 7)
+const getSupportedBits = (version: number) => {
+  let dimensions = getDimensions(version)
+
+  const alignmentElementsDimensions = 2 + (0 | (version / 7))
   const alignmentModules =
-    version <= 1
-      ? 0
-      : (Math.pow(alignmentElementsDimensions, 2) - 3) * 25 -
-        (alignmentElementsDimensions - 2) * 10
-  const bits =
+    (5 * alignmentElementsDimensions - 1) *
+      (5 * alignmentElementsDimensions - 1) -
+    56
+  const versionInfoModules = 36
+
+  return (
     dimensions * dimensions -
-    (49 + 15) * 3 -
-    (dimensions - 14) * 2 -
-    27 -
-    alignmentModules -
-    versionInfoModules
-
-  return bits
+    2 * dimensions -
+    191 -
+    alignmentModules * +(version > 1) -
+    versionInfoModules * +(version > 6)
+  )
 }
 
-export function getSupportedBytes(version: number) {
-  return Math.floor(getSupportedBits(version) / 8)
-}
+export const getRemainderBits = (version: number) =>
+  getSupportedBits(version) % 8
 
-export function getRemainderBits(version: number) {
-  const bits = getSupportedBits(version)
-  return bits % 8
-}
-
-export function getAlignmentPattern(version: number) {
+export const getAlignmentPattern = (version: number) => {
   if (version <= 1) return []
-  const last = 18 + 4 * (version - 2)
-  const elements = 2 + Math.floor(version / 7)
-  const startStep = Math.floor((last - 6) / (elements - 1))
+  const last = 4 + 4 * version
+  const elements = 0 | (version / 7)
+  const startStep = 0 | (last / (elements + 1))
+
   let firstStep = startStep
-  let nextStep = startStep
-  if (elements > 3) {
-    for (firstStep = startStep; firstStep > 0; firstStep--) {
-      nextStep = (last - 6 - firstStep) / (elements - 2)
-      if (nextStep % 2 == 0) break
-    }
+  let nextStep = firstStep
+
+  if (elements > 1) {
+    nextStep = 2 * Math.ceil(((last - startStep) / elements + 0.0001) / 2)
+    firstStep = last - nextStep * elements
   }
 
-  const alignmentPattern = [6, 6 + firstStep]
-  for (let i = 1; i < elements - 1; i++)
-    alignmentPattern.push(6 + firstStep + i * nextStep)
-
-  return alignmentPattern
+  return [6, ...range(0, elements + 1).map((i) => 6 + firstStep + i * nextStep)]
 }
 
-export function getGroups(version: number, ecLevel: EcLevels) {
-  const index = (version - 1) * 8 + ecLevel * 2
-  let ecPerBlock = qrDefinitionTable[index]
-  let wordsPerBlock = qrDefinitionTable[index + 1]
+export const getGroups = (version: number, ecLevel: EcLevels) => {
+  let index = version * 8 - 8 + ecLevel * 2,
+    ecPerBlock = qrDefinitionTable[index],
+    wordsPerBlock = qrDefinitionTable[++index],
+    bytes = 0 | (getSupportedBits(version) / 8),
+    y = 0,
+    x = 0,
+    sumBlock = ecPerBlock + wordsPerBlock
 
-  let bytes = getSupportedBytes(version)
-  let y = 0
-  let x = 0
-  for (x = 0; x <= 56; x++) {
-    let candidate =
-      (bytes - (ecPerBlock + wordsPerBlock) * x) /
-      (ecPerBlock + wordsPerBlock + 1)
-
-    if (candidate % 1 === 0) {
-      y = candidate
-      break
-    }
+  for (; x < 57; x++) {
+    let candidate = (bytes - sumBlock * x) / (sumBlock + 1)
+    if ((y = candidate) % 1 === 0) break
   }
+
   const result = [{ blocks: x, wordsPerBlock, ecPerBlock }]
-  if (y > 0) {
-    result.push({ blocks: y, wordsPerBlock: wordsPerBlock + 1, ecPerBlock })
-  }
+  y > 0 && wordsPerBlock++
+  result.push({ blocks: y, wordsPerBlock, ecPerBlock })
+
   return result
 }
 
-export function getChracterCountBits(version: number) {
-  let block =
-    version >= 1 && version <= 9
-      ? 0
-      : version >= 10 && version <= 26
-      ? 1
-      : version >= 27 && version <= 40
-      ? 2
-      : -1
+export const getChracterCountBits = (version: number) => (version <= 9 ? 8 : 16)
 
-  if (block < 0) {
-    throw new Error(`Invalid version: ${version}`)
-  }
-  return Math.min(8 + block * 8, 16)
-}
-
-export function getRequiredNumberOfBits(
+export const getRequiredNumberOfBits = (
   groups: { wordsPerBlock: number; blocks: number }[],
-) {
-  return (
-    groups.reduce((acc, val) => acc + val.wordsPerBlock * val.blocks, 0) * 8
-  )
-}
+) => groups.reduce((acc, val) => acc + val.wordsPerBlock * val.blocks, 0) * 8

@@ -6,7 +6,7 @@ import {
   range,
 } from '../utilities'
 
-function getLineGroupScore(matrix: (boolean | null)[][]) {
+const getLineGroupScore = (matrix: (boolean | null)[][]) => {
   let score = 0
   let currentColor = false
   let currentRun = 0
@@ -33,7 +33,7 @@ function getLineGroupScore(matrix: (boolean | null)[][]) {
   return score
 }
 
-function getSquareScore(matrix: (boolean | null)[][]) {
+const getSquareScore = (matrix: (boolean | null)[][]) => {
   let score = 0
 
   iterateOverMatrix(matrix, (_, x, y) => {
@@ -55,7 +55,7 @@ function getSquareScore(matrix: (boolean | null)[][]) {
   return score
 }
 
-function getFinderConfusionScore(matrix: (boolean | null)[][]) {
+const getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
   const [d, w] = [true, false]
   const template = [d, w, d, d, d, w, d, w, w, w, w]
   const patterns = [
@@ -86,7 +86,7 @@ function getFinderConfusionScore(matrix: (boolean | null)[][]) {
   return score
 }
 
-function getColorImbalanceScore(matrix: (boolean | null)[][]) {
+const getColorImbalanceScore = (matrix: (boolean | null)[][]) => {
   const totalCount = matrix.length * matrix.length
   let darkCount = 0
   iterateOverMatrix(matrix, (value) => (darkCount += value ? 1 : 0))
@@ -100,7 +100,7 @@ function getColorImbalanceScore(matrix: (boolean | null)[][]) {
   return score
 }
 
-function evaluateMasking(matrix: (boolean | null)[][]) {
+const evaluateMasking = (matrix: (boolean | null)[][]) => {
   return [
     getLineGroupScore,
     getSquareScore,
@@ -111,10 +111,10 @@ function evaluateMasking(matrix: (boolean | null)[][]) {
     .reduce((acc, val) => acc + val, 0)
 }
 
-export function applyMasking(
-  functionalMatrix: (boolean | null)[][],
+export const applyMasking = (
+  constalMatrix: (boolean | null)[][],
   dataMatrix: (boolean | null)[][],
-) {
+) => {
   const maskMatrix = (
     matrix: (boolean | null)[][],
     condition: { (x: any, y: any): boolean; (arg0: number, arg1: number): any },
@@ -131,7 +131,7 @@ export function applyMasking(
     (x, y) => y % 2 === 0,
     (x, y) => x % 3 === 0,
     (x, y) => (x + y) % 3 === 0,
-    (x, y) => (Math.floor(y / 2) + Math.floor(x / 3)) % 2 === 0,
+    (x, y) => (0 | (y / 2 + (0 | (x / 3)))) % 2 === 0,
     (x, y) => ((x * y) % 2) + ((x * y) % 3) === 0,
     (x, y) => (((x * y) % 2) + ((x * y) % 3)) % 2 === 0,
     (x, y) => (((x + y) % 2) + ((x * y) % 3)) % 2 === 0,
@@ -139,7 +139,7 @@ export function applyMasking(
 
   return maskingMethods
     .map((method) =>
-      mergeMatrices(functionalMatrix, maskMatrix(dataMatrix, method)),
+      mergeMatrices(constalMatrix, maskMatrix(dataMatrix, method)),
     )
     .reduce(
       //find the matrix with lowest score
@@ -148,7 +148,7 @@ export function applyMasking(
         return score < acc.score ? { score, mask, matrix } : acc
       },
       {
-        score: Number.POSITIVE_INFINITY,
+        score: 0xffffff,
         mask: 0,
         matrix: [] as (boolean | null)[][],
       },

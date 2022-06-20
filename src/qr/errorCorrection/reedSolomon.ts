@@ -1,10 +1,11 @@
+import { range } from '../utilities'
 import { divPoly, generatorPoly } from './galoisField'
-export function getEcWords(
-  message: Uint8Array,
+export const getEcWords = (
+  message: number[],
   ecCodeWordsCount: number,
-): Uint8Array {
+): number[] => {
   return divPoly(
-    new Uint8Array([...message, ...new Uint8Array(ecCodeWordsCount)]),
+    message.concat(range(0, ecCodeWordsCount).map((_) => 0)),
     generatorPoly(ecCodeWordsCount),
   )
 }

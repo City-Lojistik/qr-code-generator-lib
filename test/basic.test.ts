@@ -1,6 +1,6 @@
 import { assert, expect, test } from 'vitest'
 
-import getMatrix from '../src/qr/matrixGenerator'
+import { getMatrix } from '../src/qr/matrixGenerator'
 import { render } from '../src/renderer/svg'
 import expectedUrl from './results/url'
 import expectedNumeric from './results/numeric'
@@ -10,6 +10,7 @@ import expectedByteLong from './results/byteLong'
 import expectedRender from './results/render'
 import expected0 from './results/0'
 import fs from 'fs'
+import { getAlignmentPattern } from '../src/qr/definitions'
 // Edit an assertion and save to see HMR in action
 
 test('url', () => {
@@ -50,4 +51,10 @@ test('render', () => {
     ) as boolean[][],
   )
   expect(result).toStrictEqual(expectedRender)
+})
+
+test('x', () => {
+  for (let i = 0; i <= 40; i++) {
+    //console.log(getAlignmentPattern(i))
+  }
 })
