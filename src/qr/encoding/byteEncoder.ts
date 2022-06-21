@@ -6,6 +6,7 @@ import {
   encodeUtf8,
   range,
   range0,
+  len,
 } from '../utilities'
 import { getEcWords } from '../errorCorrection/reedSolomon'
 
@@ -28,14 +29,14 @@ let createBlocks = (config: QrParameters, encodedData: number[]) => (
 let result: number[]
 let interleave = (blocks: number[][]) => (
   (result = []),
-  range0(blocks.length).map((j) =>
-    range0(blocks[j].length).map(
-      (i) => (result[i * blocks.length + j] = blocks[j][i]),
+  range0(len(blocks)).map((j) =>
+    range0(len(blocks[j])).map(
+      (i) => (result[i * len(blocks) + j] = blocks[j][i]),
     ),
   ),
   result
 )
-let blocks, bits
+let blocks
 export let encode = (config: QrParameters, content: string) => (
   (blocks = createBlocks(
     config,
@@ -43,7 +44,7 @@ export let encode = (config: QrParameters, content: string) => (
       fillUpBits(
         config.requiredNumberOfBits,
         '0100' +
-          numToBits(content.length, config.characterCountBits) +
+          numToBits(len(content), config.characterCountBits) +
           encodeSymbols(content),
       ),
       8,
@@ -59,8 +60,8 @@ export let encode = (config: QrParameters, content: string) => (
 )
 
 let fillUpBits = (requiredNumberOfBits: number, bits: string) => {
-  bits += pad0(Math.min(requiredNumberOfBits - bits.length, 4)) //fill up to 0000
-  bits += pad0(8 - (bits.length % 8)) //fill up to be multiple of 8
+  bits += pad0(Math.min(requiredNumberOfBits - len(bits), 4)) //fill up to 0000
+  bits += pad0(8 - (len(bits) % 8)) //fill up to be multiple of 8
   return bits
     .padEnd(requiredNumberOfBits, '1110110000010001')
     .substr(0, requiredNumberOfBits)

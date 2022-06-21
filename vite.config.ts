@@ -1,13 +1,19 @@
 import { defineConfig } from 'vitest/config'
+import { resolve } from 'path'
 import path from 'path'
-
+const BASE = '/qr-code-generator-lib/'
 export default defineConfig({
   /* esbuild: {
     minify: true,
   },*/
-
+  base: BASE,
   build: {
     target: 'esnext',
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+      },
+    },
     lib: {
       entry: path.resolve(__dirname, 'index.ts'),
       name: 'qrcode',

@@ -7,7 +7,7 @@ import {
   getRemainderBits,
   getRequiredNumberOfBits,
 } from './definitions'
-import { encodeUtf8, range, range0 } from './utilities'
+import { encodeUtf8, len, range, range0 } from './utilities'
 export type QrParameters = {
   ecLevel: EcLevels
   version: number
@@ -74,4 +74,4 @@ let getSmallestVersion = (length: number, ecLevel = EcLevels.L) => {
 export let getParameters = (
   content: string,
   ecLevel = EcLevels.L,
-): QrParameters => getSmallestVersion(encodeUtf8(content).length, ecLevel)
+): QrParameters => getSmallestVersion(len(encodeUtf8(content)), ecLevel)

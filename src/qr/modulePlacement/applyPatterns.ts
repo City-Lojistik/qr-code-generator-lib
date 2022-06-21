@@ -1,8 +1,8 @@
 import { QrParameters } from '../parameters'
-import { createMatrix, range, range0 } from '../utilities'
+import { createMatrix, len, range, range0 } from '../utilities'
 
 let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
-  let dimensions = matrix.length
+  let dimensions = len(matrix)
   let dimensionsSubSeven = dimensions - 7
   let drawSquares = (x: number, y: number) => {
     range0(3).map((j) => {
@@ -38,7 +38,7 @@ let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
 }
 
 let applyTimingPatterns = (matrix: (boolean | null)[][]) =>
-  range(7, matrix.length - 7).map(
+  range(7, len(matrix) - 7).map(
     (i) => (matrix[6][i] = matrix[i][6] = i % 2 === 0),
   )
 
@@ -46,10 +46,10 @@ let applyDarkModule = (matrix: (boolean | null)[][]) =>
   ((matrix.at(-8) as boolean[])[8] = true)
 
 let applyReservedAreas = (matrix: (boolean | null)[][], version: number) => {
-  let dimensions = matrix.length
-  ;[range0(9), range(dimensions - 8, dimensions)].flat().map(
-    (i) => (matrix[i][8] = matrix[8][i] = false),
-  )
+  let dimensions = len(matrix)
+  ;[range0(9), range(dimensions - 8, dimensions)]
+    .flat()
+    .map((i) => (matrix[i][8] = matrix[8][i] = false))
 
   //for version >=7 codes add additional areas
   if (version >= 7)
@@ -68,10 +68,7 @@ let applyAlignmentPatterns = (
 ) =>
   locations.map((x, i) =>
     locations
-      .slice(
-        +(i === 0 || i == locations.length - 1),
-        i > 0 ? locations.length : -1,
-      )
+      .slice(+(i === 0 || i == len(locations) - 1), i > 0 ? len(locations) : -1)
       //all coordinate combinations,  do not draw if it overlaps the finder patterns
       .map((y) =>
         range0(3).map((j) =>

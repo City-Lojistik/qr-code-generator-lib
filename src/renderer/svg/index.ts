@@ -1,4 +1,7 @@
-export let render = (matrix: (boolean | null)[][]) => {
+export let render = (
+  matrix: (boolean | null)[][],
+  color: string = '#000',
+) => {
   let d = ''
   let ml = matrix.length
   matrix.map((row, y) => {
@@ -17,5 +20,5 @@ export let render = (matrix: (boolean | null)[][]) => {
   })
   return `<svg viewBox="0 0 ${ml + 10} ${
     ml + 10
-  }" stroke=currentColor stroke-width=1.05 xmlns=http://www.w3.org/2000/svg><path d="${d}"/></svg>`
+  }" stroke=${color} stroke-width=1.05 xmlns=http://www.w3.org/2000/svg><path d="${d}"/></svg>`
 }

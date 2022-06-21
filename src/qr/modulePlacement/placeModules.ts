@@ -1,5 +1,5 @@
 import { QrParameters } from '../parameters'
-import { createMatrix } from '../utilities'
+import { createMatrix, len } from '../utilities'
 import { applyMasking } from './applyMasking'
 import { getPatternMatrix } from './applyPatterns'
 import {
@@ -12,15 +12,15 @@ enum MoveDirection {
 }
 
 let applyData = (patternMatrix: (boolean | null)[][], data: string) => {
-  let dataMatrix = createMatrix(patternMatrix.length)
-  let MAX = patternMatrix.length - 1
+  let dataMatrix = createMatrix(len(patternMatrix))
+  let MAX = len(patternMatrix) - 1
   let x = MAX
   let y = MAX
   let dx = 0
   let d = 0
   let direction: MoveDirection = MoveDirection.Up
 
-  while (d < data.length) {
+  while (d < len(data)) {
     patternMatrix[y][x - dx] === null &&
       (dataMatrix[y][x - dx] = data[d++] === '1')
     //only empty fields, otherwise skip

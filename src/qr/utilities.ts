@@ -1,5 +1,5 @@
 export let chunkString = (content: string, length: number): string[] =>
-  range0(Math.ceil(content.length / length)).map((i) =>
+  range0(Math.ceil(len(content) / length)).map((i) =>
     content.substr(i++ * length, length),
   )
 
@@ -21,7 +21,7 @@ export let createMatrix = (dimensions: number): (boolean | null)[][] => {
 export let cloneMatrix = (matrix: (boolean | null)[][]) =>
   matrix.slice().map((m) => m.slice())
 
-export let len = (array: any[]) => array.length
+export let len = (array: any[] | string) => array.length
 export let mergeMatrices = (
   matrix1: (boolean | null)[][],
   matrix2: (boolean | null)[][],
@@ -64,7 +64,7 @@ export let encodeUtf8 = (s: string) => {
   let ci = 0,
     bytes = [],
     c
-  for (; ci < s.length; ci++) {
+  for (; ci < len(s); ci++) {
     c = s.charCodeAt(ci)
     if (c < 128) {
       bytes.push(c)

@@ -1,4 +1,4 @@
-import { range, range0 } from '../utilities'
+import { len, range, range0 } from '../utilities'
 
 let exponents: { [key: number]: number } = {}
 let logs: { [key: number]: number } = { 1: 0 }
@@ -25,16 +25,13 @@ generateExponentsLookUpTables()
 
 export let divPoly = (dividend: number[], divisor: number[]) => (
   (result = dividend.slice()),
-  range0(dividend.length - divisor.length + 1).map((i) =>
-    range(1, divisor.length).map(
+  range0(len(dividend) - len(divisor) + 1).map((i) =>
+    range(1, len(divisor)).map(
       (j) => (result[i + j] ^= mul(divisor[j], result[i])),
     ),
   ),
-  result.slice(result.length - divisor.length + 1) //remainder
+  result.slice(len(result) - len(divisor) + 1) //remainder
 )
 
 export let generatorPoly = (n: number) =>
-  range0(n).reduce(
-    (acc, i) => mulPoly(acc, [1, exponents[i /* % 255*/]]),
-    [1],
-  )
+  range0(n).reduce((acc, i) => mulPoly(acc, [1, exponents[i /* % 255*/]]), [1])

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QR Code Demo</title>
+  </head>
+  <body>
+    <main>
+      <input type="text" name="" id="input" value="test" />
+      <div id="output"></div>
+    </main>
+
+    <script type="module" src="/index.ts"></script>
+    <script type="module">
+      import { getMatrix, render } from './index'
+      const input = document.getElementById('input')
+      const output = document.getElementById('output')
+      input.addEventListener('input', () => {
+        output.innerHTML = render(getMatrix(input.value))
+      })
+
+      output.innerHTML = render(getMatrix(input.value))
+    </script>
+    <style>
+      main {
+        max-width: 30rem;
+        margin-left: auto;
+        margin-right: auto;
+        display: flex;
+        flex-direction: column;
+        padding-top: 3rem;
+      }
+    </style>
+  </body>
+</html>

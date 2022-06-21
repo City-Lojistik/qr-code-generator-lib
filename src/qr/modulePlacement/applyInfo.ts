@@ -1,6 +1,6 @@
 import { divPoly } from '../errorCorrection/galoisField'
 import { QrParameters } from '../parameters'
-import { bitsToArray, chunkString, numToBits, pad0, range, range0 } from '../utilities'
+import { bitsToArray, chunkString, len, numToBits, pad0, range, range0 } from '../utilities'
 
 export let applyFormatInformation = (
   config: QrParameters,
@@ -20,13 +20,13 @@ export let applyFormatInformation = (
   let a = 0,
     b = 0
   //horizontal
-  ;[range0(8 + 1), range(matrix.length - 7, matrix.length)].flat().map(
+  ;[range0(8 + 1), range(len(matrix) - 7, len(matrix))].flat().map(
     (h, i, arr) => {
       //vertical
       let v = arr.at(-1-i) as number
 
       if (h !== 6) matrix[8][h] = formatInfo[a++] === '1'
-      if (v !== 6 && v !== matrix.length - 8)
+      if (v !== 6 && v !== len(matrix) - 8)
         matrix[v][8] = formatInfo[b++] === '1'
     },
   )
@@ -57,7 +57,7 @@ export let applyVerisonInformation = (
     range0(3).map(
       (y) =>
         ((matrix.at(- 9 - y) as boolean[])[5 - x] = matrix[5 - x][
-          matrix.length - 9 - y
+          len(matrix) - 9 - y
         ] =
           versionInfo[d++] === '1'),
     ),

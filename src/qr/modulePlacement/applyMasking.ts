@@ -1,4 +1,4 @@
-import { bitsToArray, range0 } from './../utilities'
+import { bitsToArray, len, range0 } from './../utilities'
 import { cloneMatrix, iterateOverMatrix, mergeMatrices } from '../utilities'
 
 let score: number = 0
@@ -30,7 +30,7 @@ let getLineGroupScore = (matrix: (boolean | null)[][]) => {
 
 let getSquareScore = (matrix: (boolean | null)[][]) => {
   iterateOverMatrix(matrix, (_, x, y) => {
-    if (x < matrix.length - 1 && y < matrix.length - 1) {
+    if (x < len(matrix) - 1 && y < len(matrix) - 1) {
       let squareBitMask = range0(4).reduce(
         //get current, right, bottom and bottom-right module and merge them to a bitmask
         (acc, dirBitMask, i) =>
@@ -60,7 +60,7 @@ let getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
         +(value as boolean) === pattern.template[pattern.current]
           ? 1
           : -pattern.current
-      if (pattern.current >= pattern.template.length)
+      if (pattern.current >= len(pattern.template))
         (score += 40), (pattern.current = 0)
     })
 
@@ -76,7 +76,7 @@ let getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
 }
 
 let getColorImbalanceScore = (matrix: (boolean | null)[][]) => {
-  let totalCount = matrix.length * matrix.length
+  let totalCount = len(matrix) * len(matrix)
   let darkCount = 0
   iterateOverMatrix(matrix, (value) => (darkCount += +(value as boolean)))
 
