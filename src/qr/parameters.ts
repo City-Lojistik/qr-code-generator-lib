@@ -60,7 +60,7 @@ let createVersionLookup = () => {
 }
 createVersionLookup()
 
-let getSmallestVersion = (length: number, ecLevel = EcLevels.L) => {
+let getSmallestVersion = (length: number, ecLevel: EcLevels) => {
   let lookup = versionLookup.filter(
     (v) => v.ecLevel === ecLevel && v.upperLimit >= length,
   )
@@ -73,5 +73,5 @@ let getSmallestVersion = (length: number, ecLevel = EcLevels.L) => {
 
 export let getParameters = (
   content: string,
-  ecLevel = EcLevels.L,
+  ecLevel: EcLevels,
 ): QrParameters => getSmallestVersion(len(encodeUtf8(content)), ecLevel)
