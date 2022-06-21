@@ -1,4 +1,4 @@
-import { chunkString, range, range0 } from './utilities'
+import { chunkString, range0 } from './utilities'
 
 export enum EcLevels {
   L = 0,
@@ -337,7 +337,7 @@ let qrDefinitionTable = chunkString(
 
 export let getDimensions = (version: number) =>
   //return (version - 1) * 4 + 21
-  4 * version + 17
+  17 + 4 * version
 
 let getSupportedBits = (version: number) => {
   let dimensions = getDimensions(version)
@@ -347,14 +347,13 @@ let getSupportedBits = (version: number) => {
     (5 * alignmentElementsDimensions - 1) *
       (5 * alignmentElementsDimensions - 1) -
     56
-  let versionInfoModules = 36
 
   return (
+    -191 -
+    2 * dimensions +
     dimensions * dimensions -
-    2 * dimensions -
-    191 -
     alignmentModules * +(version > 1) -
-    versionInfoModules * +(version > 6)
+    36 * +(version > 6)
   )
 }
 

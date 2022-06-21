@@ -12,13 +12,13 @@ enum MoveDirection {
 }
 
 let applyData = (patternMatrix: (boolean | null)[][], data: string) => {
-  let dataMatrix = createMatrix(len(patternMatrix))
-  let MAX = len(patternMatrix) - 1
-  let x = MAX
-  let y = MAX
-  let dx = 0
-  let d = 0
-  let direction: MoveDirection = MoveDirection.Up
+  let dataMatrix = createMatrix(len(patternMatrix)),
+    MAX = len(patternMatrix) - 1,
+    x = MAX,
+    y = MAX,
+    dx = 0,
+    d = 0,
+    direction: MoveDirection = MoveDirection.Up
 
   while (d < len(data)) {
     patternMatrix[y][x - dx] === null &&
@@ -45,6 +45,6 @@ export let place = (config: QrParameters, data: string) => {
   let patternMatrix = getPatternMatrix(config)
   let dataMatrix = applyData(patternMatrix, data)
   let { mask, matrix } = applyMasking(patternMatrix, dataMatrix)
-  applyFormatInformation(config, mask, matrix)
-  return applyVersionInformation(config, matrix)
+  applyFormatInformation(config.ecLevel, mask, matrix)
+  return applyVersionInformation(config.version, matrix)
 }

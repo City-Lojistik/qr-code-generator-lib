@@ -30,48 +30,38 @@ let versionLookup: {
   dimensions: number
   alignmentPattern: number[]
 }[] = []
-let createVersionLookup = () => {
-  let requiredNumberOfBits,
-    characterCountBits,
-    upperLimit,
-    groups,
-    version = 0
 
-  range(1, 41).map((version) => {
-    range0(4).map((ecLevel) => {
-      groups = getGroups(version, ecLevel)
-      requiredNumberOfBits = getRequiredNumberOfBits(groups)
-      characterCountBits = getChracterCountBits(version)
-      upperLimit = 0 | ((requiredNumberOfBits - (4 + characterCountBits)) / 8)
+let requiredNumberOfBits, characterCountBits, groups
 
-      versionLookup.push({
-        ecLevel,
-        version,
-        groups,
-        requiredNumberOfBits,
-        characterCountBits,
-        upperLimit,
-        remainderBits: getRemainderBits(version),
-        dimensions: getDimensions(version),
-        alignmentPattern: getAlignmentPattern(version),
-      })
+range(1, 41).map((version) => {
+  range0(4).map((ecLevel) => {
+    groups = getGroups(version, ecLevel)
+    requiredNumberOfBits = getRequiredNumberOfBits(groups)
+    characterCountBits = getChracterCountBits(version)
+
+    versionLookup.push({
+      ecLevel,
+      version,
+      groups,
+      requiredNumberOfBits,
+      characterCountBits,
+      upperLimit: 0 | ((requiredNumberOfBits - (4 + characterCountBits)) / 8),
+      remainderBits: getRemainderBits(version),
+      dimensions: getDimensions(version),
+      alignmentPattern: getAlignmentPattern(version),
     })
   })
-}
-createVersionLookup()
+})
 
 let getSmallestVersion = (length: number, ecLevel: EcLevels) => {
   let lookup = versionLookup.filter(
     (v) => v.ecLevel === ecLevel && v.upperLimit >= length,
   )
 
-  if (!lookup) {
-    throw new Error('Input too long!')
-  }
+  if (!lookup) throw new Error('Input too long!')
+
   return lookup[0]
 }
 
-export let getParameters = (
-  content: string,
-  ecLevel: EcLevels,
-): QrParameters => getSmallestVersion(len(encodeUtf8(content)), ecLevel)
+export let getParameters = (content: string, ecLevel: EcLevels): QrParameters =>
+  getSmallestVersion(len(encodeUtf8(content)), ecLevel)

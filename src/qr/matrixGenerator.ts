@@ -10,6 +10,8 @@ import { EcLevels } from './definitions'
  */
 export let getMatrix = (content: string, ecLevel = EcLevels.L) => {
   let config = getParameters(content, ecLevel)
-  let bitString = encode(config, content)
-  return place(config, bitString)
+  return place(
+    config,
+    encode(config, content),
+  )
 }

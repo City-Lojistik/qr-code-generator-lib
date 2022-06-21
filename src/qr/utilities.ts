@@ -64,19 +64,15 @@ export let encodeUtf8 = (s: string) => {
   let ci = 0,
     bytes = [],
     c
+
   for (; ci < len(s); ci++) {
-    c = s.charCodeAt(ci)
-    if (c < 128) {
-      bytes.push(c)
-      continue
-    }
-    if (c < 2048) {
-      bytes.push((c >> 6) | 192)
-    } else {
+    if ((c = s.charCodeAt(ci)) < 128 && bytes.push(c)) continue
+
+    if (c < 2048) bytes.push((c >> 6) | 192)
+    else {
       if (c > 0xd7ff && c < 0xdc00) {
         c = 0x10000 + ((c & 0x03ff) << 10) + (s.charCodeAt(++ci) & 0x03ff)
-        bytes.push((c >> 18) | 240)
-        bytes.push(((c >> 12) & 63) | 128)
+        bytes.push((c >> 18) | 240, ((c >> 12) & 63) | 128)
       } else bytes.push((c >> 12) | 224)
       bytes.push(((c >> 6) & 63) | 128)
     }

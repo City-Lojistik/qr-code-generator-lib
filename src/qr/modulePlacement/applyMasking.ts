@@ -2,9 +2,9 @@ import { bitsToArray, len, range0 } from './../utilities'
 import { cloneMatrix, iterateOverMatrix, mergeMatrices } from '../utilities'
 
 let score: number = 0
+
 let getLineGroupScore = (matrix: (boolean | null)[][]) => {
   let currentColor = false
-
   let currentRun = 0
 
   let scoreLineGroupCondition = () => {
@@ -54,21 +54,21 @@ let getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
     { template: bitsToArray('00001011101'), current: 0 },
   ]
 
-  let evaluateFinderConfusionCondition = (value: boolean | null) =>
-    patterns.map((pattern) => {
-      pattern.current +=
-        +(value as boolean) === pattern.template[pattern.current]
-          ? 1
-          : -pattern.current
-      if (pattern.current >= len(pattern.template))
-        (score += 40), (pattern.current = 0)
-    })
-
   //horizontal & vertical
   ;[0, 1].map((dir) => {
     iterateOverMatrix(
       matrix,
-      (value) => evaluateFinderConfusionCondition(value),
+      (value: boolean | null) =>
+        patterns.map((pattern) => {
+          pattern.current +=
+            +(value as boolean) === pattern.template[pattern.current]
+              ? 1
+              : -pattern.current
+          if (pattern.current >= len(pattern.template)) {
+            score += 40
+            pattern.current = 0
+          }
+        }),
       () => patterns.map((pattern) => (pattern.current = 0)),
       dir,
     )
@@ -76,11 +76,10 @@ let getFinderConfusionScore = (matrix: (boolean | null)[][]) => {
 }
 
 let getColorImbalanceScore = (matrix: (boolean | null)[][]) => {
-  let totalCount = len(matrix) * len(matrix)
   let darkCount = 0
   iterateOverMatrix(matrix, (value) => (darkCount += +(value as boolean)))
 
-  let percentage = +((darkCount / totalCount) * 100)
+  let percentage = +((darkCount / (len(matrix) * len(matrix))) * 100)
   let lower = percentage - (percentage & 5)
 
   score +=

@@ -1,48 +1,68 @@
+import { EcLevels } from './../definitions'
 import { divPoly } from '../errorCorrection/galoisField'
-import { QrParameters } from '../parameters'
-import { bitsToArray, chunkString, len, numToBits, pad0, range, range0 } from '../utilities'
+import {
+  bitsToArray,
+  chunkString,
+  len,
+  numToBits,
+  pad0,
+  range,
+  range0,
+} from '../utilities'
 
 export let applyFormatInformation = (
-  config: QrParameters,
+  ecLevel: EcLevels,
   mask: number,
   matrix: (boolean | null)[][],
 ) => {
-  let bits = chunkString('01001110', 2)[config.ecLevel] + numToBits(mask, 3)
-  let message = bitsToArray(bits + pad0(10))
-  let generator = bitsToArray('10100110111')
-  let remainder = divPoly(message, generator).join('')
+  let bits = chunkString('01001110', 2)[ecLevel] + numToBits(mask, 3)
 
   let formatInfo = numToBits(
-    parseInt(bits + pad0(10, remainder), 2) ^ 21522,
+    parseInt(
+      bits +
+        pad0(
+          10,
+          divPoly(
+            bitsToArray(bits + pad0(10)),
+            bitsToArray('10100110111'),
+          ).join(''),
+        ),
+      2,
+    ) ^ 21522,
     15,
   )
 
   let a = 0,
     b = 0
   //horizontal
-  ;[range0(8 + 1), range(len(matrix) - 7, len(matrix))].flat().map(
-    (h, i, arr) => {
+  ;[range0(8 + 1), range(len(matrix) - 7, len(matrix))]
+    .flat()
+    .map((h, i, arr) => {
       //vertical
-      let v = arr.at(-1-i) as number
+      let v = arr.at(-1 - i) as number
 
       if (h !== 6) matrix[8][h] = formatInfo[a++] === '1'
       if (v !== 6 && v !== len(matrix) - 8)
         matrix[v][8] = formatInfo[b++] === '1'
-    },
-  )
+    })
   return matrix
 }
 
 export let applyVerisonInformation = (
-  config: QrParameters,
+  version: number,
   matrix: (boolean | null)[][],
 ) => {
-  if (config.version < 7) return matrix
-  let generator = bitsToArray('1111100100101')
-  let bits = numToBits(config.version, 6)
-  let message = bitsToArray(bits + pad0(12))
-  let remainder = divPoly(message, generator).join('')
-  let versionInfo = bits + pad0(12, remainder)
+  if (version < 7) return matrix
+  let bits = numToBits(version, 6)
+
+  let versionInfo =
+    bits +
+    pad0(
+      12,
+      divPoly(bitsToArray(bits + pad0(12)), bitsToArray('1111100100101')).join(
+        '',
+      ),
+    )
   /* for (let x = 0; x < 6; x++)
     for (let y = 0; y < 3; y++)
       matrix[matrix.length - 9 - y][5 - x] = matrix[5 - x][
@@ -56,7 +76,7 @@ export let applyVerisonInformation = (
   range0(6).map((x) =>
     range0(3).map(
       (y) =>
-        ((matrix.at(- 9 - y) as boolean[])[5 - x] = matrix[5 - x][
+        ((matrix.at(-9 - y) as boolean[])[5 - x] = matrix[5 - x][
           len(matrix) - 9 - y
         ] =
           versionInfo[d++] === '1'),

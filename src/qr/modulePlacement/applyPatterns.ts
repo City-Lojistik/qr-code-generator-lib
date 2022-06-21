@@ -5,6 +5,7 @@ let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
   let dimensions = len(matrix)
   let dimensionsSubSeven = dimensions - 7
   let drawSquares = (x: number, y: number) => {
+    matrix[y + 3][x + 3] = true
     range0(3).map((j) => {
       range(j, 7 - j).map(
         (i) =>
@@ -12,29 +13,25 @@ let applyFinderPatterns = (matrix: (boolean | null)[][]) => {
             matrix[y + 6 - j][x + i] =
             matrix[y + i][x + j] =
             matrix[y + i][x + 6 - j] =
-              j % 2 == 0),
+              j % 2 === 0),
       )
-      matrix[y + 3][x + 3] = true
     })
   }
 
-  let drawGapNextToSquares = () => {
-    range0(8).map(
-      (i) =>
-        (matrix[i][7] =
-          matrix[dimensions - i - 1][7] =
-          matrix[7][i] =
-          matrix[7][dimensions - i - 1] =
-          matrix[dimensionsSubSeven - 1][i] =
-          matrix[i][dimensionsSubSeven - 1] =
-            false),
-    )
-  }
+  range0(8).map(
+    (i) =>
+      (matrix[i][7] =
+        matrix[7][i] =
+        matrix[7][dimensions - i - 1] =
+        matrix[dimensions - i - 1][7] =
+        matrix[dimensionsSubSeven - 1][i] =
+        matrix[i][dimensionsSubSeven - 1] =
+          false),
+  )
 
   drawSquares(0, 0)
   drawSquares(0, dimensionsSubSeven)
   drawSquares(dimensionsSubSeven, 0)
-  drawGapNextToSquares()
 }
 
 let applyTimingPatterns = (matrix: (boolean | null)[][]) =>
@@ -68,7 +65,10 @@ let applyAlignmentPatterns = (
 ) =>
   locations.map((x, i) =>
     locations
-      .slice(+(i === 0 || i == len(locations) - 1), i > 0 ? len(locations) : -1)
+      .slice(
+        +(i === 0 || i === len(locations) - 1),
+        i > 0 ? len(locations) : -1,
+      )
       //all coordinate combinations,  do not draw if it overlaps the finder patterns
       .map((y) =>
         range0(3).map((j) =>
