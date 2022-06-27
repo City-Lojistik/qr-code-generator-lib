@@ -20,15 +20,15 @@ let mulPoly = (poly1: number[], poly2: number[]) => (
   result
 )
 
-export let divPoly = (dividend: number[], divisor: number[]) => (
-  (result = dividend.slice()),
+export let divPoly = (dividend: number[], divisor: number[]) => {
+  result = dividend.slice()
   range0(len(dividend) - len(divisor) + 1).map((i) =>
     range(1, len(divisor)).map(
       (j) => (result[i + j] ^= mul(divisor[j], result[i])),
     ),
-  ),
-  result.slice(len(result) - len(divisor) + 1) //remainder
-)
+  )
+  return result.slice(len(result) - len(divisor) + 1) //remainder
+}
 
 export let generatorPoly = (n: number) =>
   range0(n).reduce((acc, i) => mulPoly(acc, [1, exponents[i /* % 255*/]]), [1])

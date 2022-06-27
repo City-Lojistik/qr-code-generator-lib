@@ -89,7 +89,7 @@ let getColorImbalanceScore = (matrix: (boolean | null)[][]) => {
 let maskingMethods: Array<(x: number, y: number) => number> = [
   (x, y) => (x + y) % 2,
   (x, y) => y % 2,
-  (x, y) => x % 3,
+  (x) => x % 3,
   (x, y) => (x + y) % 3,
   (x, y) => (0 | (y / 2 + (0 | (x / 3)))) % 2,
   (x, y) => ((x * y) % 2) + ((x * y) % 3),
@@ -107,7 +107,10 @@ let evaluateMasking = (matrix: (boolean | null)[][]) => (
 
 let maskMatrix = (
   matrix: (boolean | null)[][],
-  condition: { (x: any, y: any): number; (arg0: number, arg1: number): any },
+  condition: {
+    (x: number, y: number): number
+    (arg0: number, arg1: number): any
+  },
 ) => {
   let copy = cloneMatrix(matrix)
   iterateOverMatrix(copy, (value, x, y) =>

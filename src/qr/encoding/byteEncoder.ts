@@ -60,7 +60,9 @@ export let encode = (config: QrParameters, content: string) => (
 )
 
 let fillUpBits = (requiredNumberOfBits: number, bits: string) => {
-  bits += pad0(Math.min(requiredNumberOfBits - len(bits), 4)) //fill up to 0000
+  bits += pad0(
+    requiredNumberOfBits - len(bits) < 4 ? requiredNumberOfBits - len(bits) : 4,
+  ) //fill up to 0000
   bits += pad0(8 - (len(bits) % 8)) //fill up to be multiple of 8
   return bits
     .padEnd(requiredNumberOfBits, '1110110000010001')
