@@ -1,10 +1,10 @@
 # qr-code-generator-lib
 
 A tiny QR Code generator that fits in a QR Code (< 2950 bytes gzipped) \*.
+The default renderer also generates a very small SVG :)
 
-The default renderer also generates a very small SVG :) 
+\* It does not support dedicated (alpha)numeric and kanji modes, only utf8/byte mode of the standard i.e. the generated code will be slightly larger in cases where those character sets are used exclusively.
 
-<sup><sub>\* does not support dedicated (alpha)numeric and kanji modes, only utf8/byte mode of the standard i.e. the generated code will be slightly larger in cases where those character sets are used exclusively.</sub></sup>
 
 [Demo Page](https://alexruppert.github.io/qr-code-generator-lib/)
 
