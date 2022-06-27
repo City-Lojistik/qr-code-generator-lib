@@ -13,7 +13,7 @@ function removeBuggyTerserJs() {
     name: 'removeBuggyTerserJs',
     generateBundle(options, bundle) {
       const jsFiles = Object.keys(bundle)
-        .filter((key) => key.endsWith('iife.js') || key.endsWith('cjs.js'))
+        .filter((key) => key.endsWith('iife.js') || key.endsWith('cjs'))
         .map((key) => bundle[key])
 
       jsFiles.forEach((js) => {
@@ -28,21 +28,30 @@ function removeBuggyTerserJs() {
 }
 
 export default defineConfig({
-  base: BASE,
   plugins: [removeBuggyTerserJs()],
   build: {
     target: 'esnext',
     lib: {
       entry: path.resolve(__dirname, 'index.ts'),
       name: 'qrcode',
-      fileName: (format) => `qr-code-generator-lib.${format}.js`,
+      fileName: (format) => {
+        switch (format) {
+          case 'cjs':
+            return `qr-code-generator-lib.cjs`
+          case 'es':
+            return `qr-code-generator-lib.mjs`
+          default:
+            return `qr-code-generator-lib.${format}.js`
+        }
+      },
+
       formats: ['es', 'cjs', 'iife'],
     },
     minify: 'terser',
     terserOptions: {
       mangle: {
         properties: {
-          reserved: ['getMatrix', 'render', 'renderPath'],
+          reserved: ['getMatrix', 'render', 'renderPath', 'dim'],
         },
       },
       compress: {

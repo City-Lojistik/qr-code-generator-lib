@@ -1,13 +1,13 @@
 {
   "name": "qr-code-generator-lib",
   "version": "0.1.0",
-  "description": "A tiny qr code generation library",
-  "main": "./dist/qr-code-generator-lib.es.js",
+  "description": "A tiny <3 KB QR code generation library",
+  "main": "./dist/qr-code-generator-lib.mjs",
   "author": "Alexander Ruppert",
   "license": "MIT",
   "private": false,
   "type": "module",
-  "module": "./dist/qr-code-generator-lib.es.js",
+  "module": "./dist/qr-code-generator-lib.mjs",
   "types": "dist/types/index.d.ts",
   "devDependencies": {
     "gh-pages": "^4.0.0",
@@ -24,15 +24,19 @@
     "gh": "node publish.js"
   },
   "exports": {
-    "require": "./dist/qr-code-generator-lib.cjs.js",
-    "default": "./dist/qr-code-generator-lib.es.js"
+    "require": "./dist/qr-code-generator-lib.cjs",
+    "default": "./dist/qr-code-generator-lib.mjs"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "keywords": [
     "qr",
     "qrcode"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/AlexRuppert/qr-code-generator-lib.git"
+  },
+  "homepage": "https://github.com/AlexRuppert/qr-code-generator-lib"
 }
