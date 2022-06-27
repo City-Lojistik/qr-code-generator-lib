@@ -5,7 +5,7 @@ The generated SVG from the default renderer is also quite small.
 
 <sup><sub>\* does not support dedicated (alpha)numeric and kanji modes, only utf8/byte mode of the standard i.e. the generated code will be slightly larger in cases where those character sets are used exclusively.</sub></sup>
 
-Demo page:
+[Demo Page](https://alexruppert.github.io/qr-code-generator-lib/)
 
 ## Install
 
