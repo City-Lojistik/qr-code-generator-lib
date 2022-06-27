@@ -5,6 +5,15 @@
  * @returns The SVG string
  */
 export let render = (matrix: (boolean | null)[][], color: string = '#000') => {
+  let { d, dim } = renderPath(matrix)
+  return `<svg viewBox="0 0 ${dim} ${dim}" stroke=${color} stroke-width=1.05 xmlns=http://www.w3.org/2000/svg><path d="${d}"/></svg>`
+}
+/**
+ * Renders as a SVG path, use this method for reactive frameworks.
+ * @param matrix The matrix to convert to SVG
+ * @returns The d attribute value and viewbox dimensions of the square.
+ */
+export let renderPath = (matrix: (boolean | null)[][]) => {
   let d = ''
   matrix.map((row, y) => {
     let lastX = 0,
@@ -20,7 +29,5 @@ export let render = (matrix: (boolean | null)[][], color: string = '#000') => {
       }
     }
   })
-  return `<svg viewBox="0 0 ${matrix.length + 10} ${
-    matrix.length + 10
-  }" stroke=${color} stroke-width=1.05 xmlns=http://www.w3.org/2000/svg><path d="${d}"/></svg>`
+  return { d, dim: matrix.length + 10 }
 }

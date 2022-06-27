@@ -1,4 +1,4 @@
 import { getMatrix } from './src/qr/matrixGenerator'
-import { render } from './src/renderer/svg/index'
+import { render, renderPath } from './src/renderer/svg/index'
 
-export { getMatrix, render }
+export { getMatrix, render, renderPath }

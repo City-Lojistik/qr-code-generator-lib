@@ -8,6 +8,7 @@
     "checkJs": true,
     "strict": true,
     "strictNullChecks": true,
+    "declaration": true,
     "lib": ["esnext", "dom", "dom.iterable", "scripthost"]
   },
   "include": ["src/**/*.d.ts", "src/**/*.ts", "src/**/*.js", "index.ts"]
