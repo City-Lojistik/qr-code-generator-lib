@@ -40,7 +40,7 @@ let applyTimingPatterns = (matrix: (boolean | null)[][]) =>
   )
 
 let applyDarkModule = (matrix: (boolean | null)[][]) =>
-  ((matrix.at(-8) as boolean[])[8] = true)
+  ((matrix[matrix.length - 8] as boolean[])[8] = true)
 
 let applyReservedAreas = (matrix: (boolean | null)[][], version: number) => {
   let dimensions = len(matrix)

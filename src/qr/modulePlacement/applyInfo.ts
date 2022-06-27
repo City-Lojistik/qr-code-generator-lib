@@ -39,7 +39,7 @@ export let applyFormatInformation = (
     .flat()
     .map((h, i, arr) => {
       //vertical
-      let v = arr.at(-1 - i) as number
+      let v = arr[arr.length - 1 - i] as number
 
       if (h !== 6) matrix[8][h] = formatInfo[a++] === '1'
       if (v !== 6 && v !== len(matrix) - 8)
@@ -76,7 +76,7 @@ export let applyVerisonInformation = (
   range0(6).map((x) =>
     range0(3).map(
       (y) =>
-        ((matrix.at(-9 - y) as boolean[])[5 - x] = matrix[5 - x][
+        ((matrix[matrix.length - 9 - y] as boolean[])[5 - x] = matrix[5 - x][
           len(matrix) - 9 - y
         ] =
           versionInfo[d++] === '1'),
