@@ -1,6 +1,6 @@
 {
   "name": "qr-code-generator-lib",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A tiny <3 KB QR code generation library",
   "main": "./dist/qr-code-generator-lib.mjs",
   "author": "Alexander Ruppert",
