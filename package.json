@@ -24,6 +24,7 @@
     "gh": "node publish.js"
   },
   "exports": {
+    "types": "./dist/types/index.d.ts",
     "require": "./dist/qr-code-generator-lib.cjs",
     "default": "./dist/qr-code-generator-lib.mjs"
   },
