@@ -10,9 +10,9 @@
   "module": "./dist/qr-code-generator-lib.mjs",
   "types": "dist/types/index.d.ts",
   "devDependencies": {
-    "gh-pages": "^4.0.0",
+    "gh-pages": "^5.0.0",
     "typescript": "^4.7.4",
-    "vite": "^2.9.12",
+    "vite": "^3.2.11",
     "vitest": "^0.15.1"
   },
   "scripts": {
